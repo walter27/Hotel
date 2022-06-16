@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>HOTEL LEON</title>
+	<h:outputStylesheet name="css/template.css" />
+	<h:outputScript name="js/funciones.js" />
+
+
+</h:head>
+<body>
+	<div class="wrapper">
+		<div class="header">
+			<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+				columnClasses="ui-grid-col-6" layout="grid" style="margin:-10px;">
+
+				<h3  style=" color:white; margin: 0px; ">| SIH  | Sistema de información hotelero |</h3>
+
+				<p:commandButton id="salir" icon="fa fa-power-off"
+					style="float: right;" title="Cerrar sesion">
+					<p:ajax process="@this" listener="#{reciboControlador.logout()}" />
+					<p:tooltip for="salir" />
+
+				</p:commandButton>
+			</p:panelGrid>
+		</div>
+		<div class="sidebar">
+			<ui:include src="/menu/menu.xhtml" />
+		</div>
+		<div class="content">
+			<ui:insert name="content"></ui:insert>
+
+		</div>
+	</div>
+	<ui:insert name="externalForm"></ui:insert>
+	<ui:insert name="jsForm"></ui:insert>
+
+
+</body>
+
+</html>
+
+

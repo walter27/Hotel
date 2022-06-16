@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+	<title>Login</title>
+	<h:outputStylesheet name="css/template.css" />
+
+</h:head>
+<h:body styleClass="body"
+	style="	background: url(#{ resource [ 'imagenes:fondo2.svg' ]
+}
+
+);">
+	<div class="login-card">
+		<p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid"
+			styleClass="ui-panelgrid-blank" style="text-align: center">
+
+			<p:messages for="messages" showDetail="true">
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:graphicImage url="/resources/imagenes/log.png" width="150px" />
+		</p:panelGrid>
+
+		<br />
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+					columnClasses="ui-grid-col-12" layout="grid">
+					<p:outputLabel for="j_username">
+						<p:inputText id="j_username" placeholder="Usuario"
+							value="#{reciboControlador.usuario.usuarioSistemaUsuario}">
+							<p:message for="j_username" display="text" />
+						</p:inputText>
+					</p:outputLabel>
+
+					<p:outputLabel for="j_password">
+						<p:password id="j_password" placeholder="Contraseña"
+							value="#{reciboControlador.usuario.usuarioSistemaContrasena}">
+							<p:message for="j_password" display="text" />
+						</p:password>
+					</p:outputLabel>
+					<p:commandButton value="Iniciar sesión" class="login login-submit"
+						update="form"
+						actionListener="#{reciboControlador.ingresarSistema()}">
+
+					</p:commandButton>
+					<div class="login-help">Si olvido su usuario o contraseña
+						pongase en contacto con el administrador</div>
+
+				</p:panelGrid>
+			</div>
+		</h:form>
+	</div>
+</h:body>
+</html>
+

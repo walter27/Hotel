@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<h:form id="form">
+			<p:growl id="growl" for="messages" showDetail="true" sticky="true" />
+			<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+				styleClass="ui-panelgrid-blank">
+				<h4 style="color: gray; margin: 0px;">RESGITRO / SERVICIOS</h4>
+			</p:panelGrid>
+
+			<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-2.5"
+				styleClass="ui-panelgrid-blank">
+				<p:commandButton value="Nuevo producto" icon="fa fa-bed"
+					type="button" onclick="PF('dlgProducto').show();"
+					style="box-shadow: 2px 3px 15px gray;" />
+			</p:panelGrid>
+			<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+				styleClass="ui-panelgrid-blank">
+				<p:dataTable id="dtProducto" var="producto" widgetVar="productos"
+					value="#{productoControlador.listaProductos}"
+					filteredValue="#{productoControlador.filteredProductos}"
+					style="box-shadow: 2px 3px 15px gray;" reflow="true"
+					paginator="true" rows="7"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+					<f:facet name="header">
+						<p:outputPanel>
+							<p:inputText id="globalFilter" onkeyup="PF('produtos').filter()"
+								style="width:200px" placeholder="Buscar producto" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:column headerText="Servicio"
+						filterBy="#{producto.productoServicio.servicioNombre}"
+						filterStyle="display:none">
+						<h:outputText value="#{producto.productoServicio.servicioNombre}" />
+					</p:column>
+					<p:column headerText="Nombre" filterBy="#{producto.productoNombre}"
+						filterStyle="display:none">
+						<h:outputText value="#{producto.productoNombre}" />
+					</p:column>
+					<p:column headerText="Precio" filterBy="#{producto.productoPrecio}"
+						filterStyle="display:none">
+						<h:outputText value="#{producto.productoPrecio}" />
+					</p:column>
+					<p:column headerText="Descripcion"
+						filterBy="#{producto.productoDescripcion}"
+						filterStyle="display:none">
+						<h:outputText value="#{producto.productoDescripcion}" />
+					</p:column>
+
+					<p:column style="width:80px;text-align: center">
+
+						<p:commandButton update="form3" id="editar"
+							oncomplete="PF('dlgEditarProducto').show()"
+							title="Editar Producto" icon="ui-icon-pencil">
+							<f:setPropertyActionListener value="#{producto}"
+								target="#{productoControlador.editarProducto}" />
+						</p:commandButton>
+						<p:tooltip id="toolTipFocus" for="editar" position="top" />
+
+					</p:column>
+					<p:column style="width:80px;text-align: center">
+						<p:commandButton icon="ui-icon-trash" id="eliminar"
+							actionListener="#{productoControlador.eliminarProducto(producto)}"
+							onclick="return confirm('Seguro que desea eliminar ')"
+							update="form" title="Eliminar producto"></p:commandButton>
+						<p:tooltip id="toolTipFocus2" for="eliminar" position="top" />
+
+
+					</p:column>
+
+
+				</p:dataTable>
+			</p:panelGrid>
+		</h:form>
+		<p:dialog id="dlgproducto" widgetVar="dlgProducto"
+			header="Nuevo Producto" modal="true" resizable="false"
+			closeOnEscape="true" responsive="true">
+			<h:form id="form2">
+				<h:panelGrid columns="2" columnClasses="ui-grid-col-6" layout="grid"
+					styleClass="ui-panelgrid-blank">
+
+					<p:outputLabel for="servicio" value="Servicio" />
+					<p:selectOneMenu id="servicio" style="width:100%"
+						value="#{productoControlador.actualProducto.productoServicio}"
+						converter="servicioConverter">
+						<f:selectItems value="#{servicioControlador.listaServicios}"
+							var="servicio" itemLabel="#{servicio.servicioNombre}"
+							itemValue="#{servicio}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Producto" />
+					<p:inputText required="true"
+						value="#{productoControlador.actualProducto.productoNombre}" />
+
+					<h:outputLabel value="Precio" />
+					<p:inputText required=" true"
+						value="#{productoControlador.actualProducto.productoPrecio}" />
+
+					<h:outputLabel value="Descripcion" />
+					<p:inputText
+						value="#{productoControlador.actualProducto.productoDescripcion}" />
+				</h:panelGrid>
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+					<p:commandButton icon="fa fa-save" value="Guardar"
+						onclick="PF('dlgProducto').hide();"
+						actionListener="#{productoControlador.addProducto()}"
+						update="form2 form">
+					</p:commandButton>
+
+				</h:panelGrid>
+
+
+			</h:form>
+		</p:dialog>
+		<p:dialog id="dlgEditar" widgetVar="dlgEditarProducto"
+			header="Editar Servicio" modal="true" resizable="false"
+			closeOnEscape="true" responsive="true">
+			<h:form id="form3">
+				<h:panelGrid id="panel2" columns="2" columnClasses="ui-grid-col-6"
+					layout="grid" styleClass="ui-panelgrid-blank">
+
+					<p:outputLabel for="servicio" value="Servicio" />
+					<p:selectOneMenu id="servicio" style="width:100%"
+						value="#{productoControlador.editarProducto.productoServicio}"
+						converter="servicioConverter">
+						<f:selectItems value="#{servicioControlador.listaServicios}"
+							var="servicio" itemLabel="#{servicio.servicioNombre}"
+							itemValue="#{servicio}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Producto" />
+					<p:inputText required="true"
+						value="#{productoControlador.editarProducto.productoNombre}" />
+
+					<h:outputLabel value="Precio" />
+					<p:inputText rendered="true"
+						value="#{productoControlador.editarProducto.productoPrecio}" />
+
+					<h:outputLabel value="Descripcion" />
+					<p:inputText
+						value="#{productoControlador.editarProducto.productoDescripcion}" />
+				</h:panelGrid>
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+					<p:commandButton icon="fa fa-save" value="Editar"
+						onclick="PF('dlgEditarProducto').hide();"
+						actionListener="#{productoControlador.editarProducto()}"
+						update="form3 form">
+					</p:commandButton>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

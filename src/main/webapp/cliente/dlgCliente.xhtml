@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="dilaogo" widgetVar="dlgCliente"
+		header="Clientes" modal="true" resizable="false"
+		closeOnEscape="true" responsive="true">
+		<h:form>
+			<p:dataTable id="dtcliente" var="cliente" widgetVar="clientes"
+				value="#{asignarCliente.listaClientes}"
+				filteredValue="#{asignarCliente.filteredClientes}"
+				style="box-shadow: 2px 3px 15px gray;" reflow="true"
+				paginator="true" rows="5"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:inputText id="globalFilter" onkeyup="PF('clientes').filter()"
+							style="width:200px" placeholder="Buscar cliente" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:column headerText="Cedula/RUC"
+					filterBy="#{cliente.personaCedula}" filterStyle="display:none">
+					<h:outputText value="#{cliente.personaCedula}" />
+				</p:column>
+
+				<p:column headerText="Cliente:"
+					filterBy="#{cliente.personaNombres} #{cliente.personaApellidos}"
+					filterStyle="display:none">
+					<h:outputText
+						value="#{cliente.personaNombres} #{cliente.personaApellidos}" />
+				</p:column>
+
+
+				<p:column headerText="Direccion"
+					filterBy="#{cliente.personaDireccion}" filterStyle="display:none">
+					<h:outputText value="#{cliente.personaDireccion}" />
+				</p:column>
+
+				<p:column headerText="Telefono"
+					filterBy="#{cliente.personaTelefono}" filterStyle="display:none">
+					<h:outputText value="#{cliente.personaTelefono}" />
+				</p:column>
+				<p:column headerText="Correo Electronico"
+					filterBy="#{cliente.personaCorreo}" filterStyle="display:none">
+					<h:outputText value="#{cliente.personaCorreo}" />
+				</p:column>
+				<p:column headerText="Nacionalidad"
+					filterBy="#{cliente.clienteNacionalidad}"
+					filterStyle="display:none">
+					<h:outputText value="#{cliente.clienteNacionalidad}" />
+				</p:column>
+
+				<p:column style="width:100px;text-align: center">
+					<p:commandButton id="focus" icon="ui-icon-check"
+						actionListener="#{asignarCliente.enviarClienteSelecionado(cliente)}"
+						title="Asignar cliente" onclick="PF('dlgCliente').hide();">
+					</p:commandButton>
+					<p:tooltip id="toolTipFocus" for="focus" position="top" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>

@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">REGISTRAR LIMPIEZA</h3>
+				</p:panelGrid>
+
+				<p:panelGrid id="panel" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+					<p:messages for="msg" showDetail="true">
+						<p:autoUpdate />
+					</p:messages>
+
+					<p:panelGrid columns="3" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-2,ui-grid-col-9,ui-grid-col-1"
+						layout="grid">
+
+						<h:outputLabel for="fecha" value="Fecha">
+							<p:calendar id="fecha" locale="es"
+								value="#{servicioControlador.gobernanta.gobernantaFecha}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil"
+								showButtonPanel="true">
+							</p:calendar>
+						</h:outputLabel>
+						<h:outputLabel for="txtempleado" value="Empleado">
+							<p:inputText id="txtempleado" title="Empleado" readonly="true"
+								value="#{servicioControlador.gobernanta.gobernantaEmpleado.personaNombres} #{servicioControlador.gobernanta.gobernantaEmpleado.personaApellidos} / #{servicioControlador.gobernanta.gobernantaEmpleado.personaCedula} / Teléf:#{servicioControlador.gobernanta.gobernantaEmpleado.personaTelefono}" />
+
+						</h:outputLabel>
+						<h:outputLabel>
+							<br />
+							<p:commandButton process="@this"
+								oncomplete="PF('dlgEmpleado').show()" icon="fa fa-search" />
+						</h:outputLabel>
+					</p:panelGrid>
+
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<p:dataTable id="dtListaHabitaciones" var="habitacion"
+							value="#{servicioControlador.gobernanta.listaHabitaciones}"
+							editable="true" editMode="cell" widgetVar="habitaciones"
+							reflow="true" paginator="true" rows="7"
+							selection="#{servicioControlador.habitacionSelecionada}"
+							selectionMode="single" rowKey="#{habitacion.habitacionId}"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+							<f:facet name="header">
+								<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+									<h4 style="margin: 0px; float: left">Habitaciones</h4>
+									<p:commandButton icon="fa fa-bed" style="margin-right: -25px"
+										title=" Seleccionar habitacion"
+										action="#{asignarHabitacion.cargarHabitaciones()}" />
+
+								</p:panelGrid>
+							</f:facet>
+
+							<p:ajax event="rowSelect"  
+								listener="#{servicioControlador.onRowSelect}" />
+
+							<p:column headerText="Habitacion">
+								<h:outputText value="#{habitacion.habitacionCodigo}"
+									style="width:96%" label="habitacion" />
+							</p:column>
+
+							<p:column headerText="Tipo">
+								<h:outputText
+									value="#{habitacion.tipoHabitacion.tipoHabitacionCategoria}"
+									style="width:96%" label="habitacion" />
+							</p:column>
+
+							<p:column headerText="Precio">
+								<h:outputText value="#{habitacion.habitacionPrecioDia}"
+									style="width:96%" />
+							</p:column>
+
+							<p:column headerText="Edificio">
+								<h:outputText value="#{habitacion.habitacionEdificio}"
+									style="width:96%" />
+							</p:column>
+
+						</p:dataTable>
+						<p:contextMenu for="dtListaHabitaciones">
+							<p:menuitem value="Delete" update="dtListaHabitaciones"
+								icon="ui-icon-close"
+								actionListener="#{servicioControlador.removerHabitacion()}">
+							</p:menuitem>
+						</p:contextMenu>
+
+						<p:outputLabel value="Observaciones" />
+						<p:inputTextarea
+							value="#{servicioControlador.gobernanta.gobernantaDescripcion}"
+							rows="5" autoResize="false" />
+					</h:panelGrid>
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-8" layout="grid" style="float:right">
+						<p:commandButton icon="fa fa-close" value="CANCELAR"
+							update="form panel"
+							actionListener="#{servicioControlador.cancelarGobernanta()}"
+							action="#{asignarHabitacion.cargarHabitaciones()}"></p:commandButton>
+						<p:commandButton icon="fa fa-save" value="GUARDAR"
+							actionListener="#{servicioControlador.addGobernanta()}"
+							update="form ">
+						</p:commandButton>
+					</p:panelGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/dialogos/dlgEmpleado.xhtml" />
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form3">
+			<div class="ui-fluid">
+				<p:messages for="messages" showDetail="true" />
+
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12">
+
+					<h3 style="color: gray; margin: 0px;">ALOJAMIENTO / CHECK IN</h3>
+				</h:panelGrid>
+				<p:panelGrid id="panel" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+					<h4 style="margin: 0px">Huésped</h4>
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-10,ui-grid-col-2" layout="grid">
+
+						<p:inputText id="cedula" title="Datos del cliente" readonly="true"
+							value="#{reciboControlador.alojamiento.alojamientoCliente.personaNombres} #{reciboControlador.alojamiento.alojamientoCliente.personaApellidos} / #{reciboControlador.alojamiento.alojamientoCliente.personaCedula} / Teléf:#{reciboControlador.alojamiento.alojamientoCliente.personaTelefono}" />
+
+						<p:commandButton process="@this"
+							oncomplete="PF('dlgCliente').show();;" icon="fa fa-search" />
+					</p:panelGrid>
+
+					<h4 style="margin: 0px">Habitación</h4>
+					<p:panelGrid columns="4" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-3" layout="grid">
+						<p:outputLabel for="numero" value=" Nº de Habitacion">
+							<p:inputText id="numero" readonly="true" value="#{reciboControlador.reciboHabitacion.habitacionCodigo}" />
+						</p:outputLabel>
+
+						<p:outputLabel for="edificio" value="Edificio">
+							<p:inputText id="edificio" readonly="true" value="#{reciboControlador.reciboHabitacion.habitacionEdificio}" />
+						</p:outputLabel>
+
+						<p:outputLabel for="tipohabitacion" value="Tipo de Habitacion">
+							<p:inputText id="tipohabitacion" readonly="true" value="#{reciboControlador.reciboHabitacion.tipoHabitacion.tipoHabitacionCategoria}"/>
+						</p:outputLabel>
+
+						<p:outputLabel for="precio" value="Precio">
+							<p:inputText id="precio" readonly="true" value="#{reciboControlador.reciboHabitacion.habitacionPrecioDia}" />
+						</p:outputLabel>
+					</p:panelGrid>
+					<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						styleClass="ui-panelgrid-blank">
+						<p:inputTextarea id="descripcion" rows="5" cols="120"
+							readonly="true"  value="#{reciboControlador.reciboHabitacion.habitacionDescripcion}"/>
+					</p:panelGrid>
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-8" layout="grid" style="float:right">
+						<p:commandButton icon="fa fa-close" value="CANCELAR"
+							action="/hospedaje/planning" update="form3 panel"></p:commandButton>
+						<p:commandButton icon="fa fa-list-ul" value="AGREGAR"
+							actionListener="#{reciboControlador.addDetalle()}" update="form3 "
+							action="/hospedaje/checkInHospedaje">
+
+						</p:commandButton>
+					</p:panelGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/hospedaje/dlgCliente.xhtml" />
+		</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank">
+
+					<h4 style="color: gray; margin: 0px;">HABITACIONES</h4>
+				</p:panelGrid>
+				<p:messages for="msg" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				<p:panelGrid columns="5"
+					columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<p:commandButton
+						style="background-color: #a6ffa6;border-color:#a6ffa6;color: black;width:100%;box-shadow: 2px 3px 15px gray"
+						icon="fa fa-bed" value="DISPONIBLES"
+						actionListener="#{reservaControlador.cambiarHabitacionDisponible()}"
+						update="habitaciones" />
+					<p:commandButton
+						style="background-color: #ff9797;border-color:#ff9797;color: black;width:100%;box-shadow: 2px 3px 15px gray"
+						icon="fa fa-bed" value="OCUPADAS"
+						actionListener="#{servicioControlador.impemri()}" />
+					<p:commandButton
+						style="background-color: #ffc58a;border-color:#ffc58a;color: black;width:100%;box-shadow: 2px 3px 15px gray"
+						icon="fa fa-bed" value="RESERVADAS"
+						actionListener="#{reservaControlador.cargarReserva()}" />
+					<p:commandButton
+						style="background-color: #9dceff;border-color:#9dceff;color: black;width:100%;box-shadow: 2px 3px 15px gray"
+						icon="fa fa-bed" value="MANTENIMIENTO"
+						actionListener="#{reservaControlador.cambiarHabitacionMantenimiento()}"
+						update="habitaciones" />
+					<p:commandButton
+						style="background-color: #bcbcbc;border-color:#bcbcbc;color: black;width:100%;box-shadow: 2px 3px 15px gray"
+						icon="fa fa-bed" value="LIMPIEZA"
+						actionListener="#{reservaControlador.enviarHabitacionesSelecionadas()}"
+						update="habitaciones" />
+				</p:panelGrid>
+
+				<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+					columnClasses="ui-grid-col-12" layout="grid">
+
+					<p:dataGrid var="habitacion" style="box-shadow: 2px 3px 15px gray;"
+						value="#{asignarHabitacion.listaHabitaciones}" columns="6"
+						layout="grid" rows="24" paginator="true" id="habitaciones"
+						paginatorTemplate="  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="6,12,24" widgetVar="datagrid">
+
+						<f:facet name="header">
+							<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+								columnClasses="ui-grid-col-12" layout="grid"
+								style="margin:-10px">
+								<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid"
+									style="float:right;margin-right:-18px;">
+									<p:inputText id="globalFilter"
+										value="#{asignarHabitacion.buscarTipoHabitacion}"
+										style="width:178px" placeholder="Buscar habitacion">
+										<p:ajax event="keyup" update="form:habitaciones"
+											listener="#{asignarHabitacion.buscarHabitacion()}" />
+									</p:inputText>
+								</p:panelGrid>
+							</p:panelGrid>
+						</f:facet>
+
+						<p:panel style="text-align:center; font-size: 75%"
+							widgetVar="panels"
+							styleClass="#{habitacion.habitacionEstado eq 'OCUPADA' ? 'ocupada': habitacion.habitacionEstado eq 'DISPONIBLE' ? 'disponible': habitacion.habitacionEstado eq 'RESERVADA' ? 'reservada': habitacion.habitacionEstado eq 'MANTENIMIENTO' ? 'mantenimiento':habitacion.habitacionEstado eq 'LIMPIEZA' ? 'limpieza':null}">
+							<f:facet name="header">
+								<h:selectBooleanCheckbox value="#{habitacion.habitacionboolean}"
+									style="float: left">
+									<p:ajax execute="@this"
+										listener="#{reservaControlador.recivirHabitacion(habitacion)}" />
+								</h:selectBooleanCheckbox>
+								<p:outputLabel value="#{habitacion.habitacionCodigo}"></p:outputLabel>
+								<p:commandLink update="form2:habitacionDetail"
+									oncomplete="PF('habitacionDialog').show()" title="Ver detalles">
+									<h:outputText styleClass="fa fa-info-circle"
+										style="margin:0 auto;font-size: 10px;float: right" />
+									<f:setPropertyActionListener value="#{habitacion}"
+										target="#{habitacionControlador.habitacionSeleccionada}" />
+								</p:commandLink>
+
+
+
+							</f:facet>
+
+							<h:outputText
+								value="#{habitacion.tipoHabitacion.tipoHabitacionCategoria} - #{habitacion.habitacionPrecioDia}$" />
+
+							<br />
+							<br />
+
+							<p:commandButton id="resgistrar" icon="fa fa-book"
+								style="width:30%" title="check in"
+								actionListener="#{asignarHabitacion.enviarHabitacionSeleccionada(habitacion)}"
+								update="form3">
+
+							</p:commandButton>
+							<p:tooltip id="toolTipFocus" for="resgistrar" />
+
+
+						</p:panel>
+
+					</p:dataGrid>
+
+				</p:panelGrid>
+			</div>
+		</h:form>
+
+		<p:dialog header="Info. Habitacion" widgetVar="habitacionDialog"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true">
+			<h:form id="form2">
+				<div class="ui-fluid">
+
+					<p:outputPanel id="habitacionDetail" style="text-align:center;">
+						<p:panelGrid columns="2"
+							rendered="#{not empty habitacionControlador.habitacionSeleccionada}"
+							columnClasses="label,value">
+
+							<h:outputText value="Edificio" />
+							<h:outputText
+								value="#{habitacionControlador.habitacionSeleccionada.habitacionEdificio}" />
+
+							<h:outputText value="Descripcion:" />
+							<h:outputText
+								value="#{habitacionControlador.habitacionSeleccionada.habitacionDescripcion}" />
+						</p:panelGrid>
+					</p:outputPanel>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Alojamiento" widgetVar="alojamientoDialog"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true" closeOnEscape="true">
+
+			<h:form id="form3">
+				<div class="ui-fluid">
+
+					<p:messages for="messages" showDetail="true">
+						<p:autoUpdate />
+					</p:messages>
+					<p:panelGrid id="panel" columns="1" layout="grid"
+						style="box-shadow: 2px 3px 15px gray;width:700px">
+						<h4 style="margin: 0px">Huésped</h4>
+						<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-10,ui-grid-col-2" layout="grid">
+
+							<p:inputText id="clienteAlojamiento" title="Datos del cliente"
+								readonly="true"
+								value="#{reciboControlador.alojamiento.alojamientoCliente.personaNombres} #{reciboControlador.alojamiento.alojamientoCliente.personaApellidos} / #{reciboControlador.alojamiento.alojamientoCliente.personaCedula} / Teléf:#{reciboControlador.alojamiento.alojamientoCliente.personaTelefono}" />
+
+							<p:commandButton process="@this"
+								oncomplete="PF('dlgCliente').show();;" icon="fa fa-search" />
+						</p:panelGrid>
+
+						<h4 style="margin: 0px">Habitación</h4>
+						<p:panelGrid columns="4" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-3" layout="grid">
+							<p:outputLabel for="numero" value=" Nº de Habitacion">
+								<p:inputText id="numero" readonly="true"
+									value="#{reciboControlador.reciboHabitacion.habitacionCodigo}" />
+							</p:outputLabel>
+
+							<p:outputLabel for="edificio" value="Edificio">
+								<p:inputText id="edificio" readonly="true"
+									value="#{reciboControlador.reciboHabitacion.habitacionEdificio}" />
+							</p:outputLabel>
+
+							<p:outputLabel for="tipohabitacion" value="Tipo de Habitacion">
+								<p:inputText id="tipohabitacion" readonly="true"
+									value="#{reciboControlador.reciboHabitacion.tipoHabitacion.tipoHabitacionCategoria}" />
+							</p:outputLabel>
+
+							<p:outputLabel for="precio" value="Precio">
+								<p:inputText id="precio" readonly="true"
+									value="#{reciboControlador.reciboHabitacion.habitacionPrecioDia}" />
+							</p:outputLabel>
+						</p:panelGrid>
+						<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+							styleClass="ui-panelgrid-blank">
+							<p:inputTextarea id="descripcion" rows="5" cols="120"
+								readonly="true"
+								value="#{reciboControlador.reciboHabitacion.habitacionDescripcion}" />
+						</p:panelGrid>
+
+						<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-8" layout="grid" style="float:right">
+							<p:commandButton icon="fa fa-close" value="CANCELAR"
+								actionListener="#{reciboControlador.cancelarAlojamiento()}"
+								onclick="PF('alojamientoDialog').hide()" update="form3"></p:commandButton>
+							<p:commandButton icon="fa fa-list-ul" value="AGREGAR"
+								actionListener="#{reciboControlador.addDetalle()}"
+								update="form3 " action="/hospedaje/checkInHospedaje">
+
+							</p:commandButton>
+						</p:panelGrid>
+					</p:panelGrid>
+				</div>
+
+			</h:form>
+		</p:dialog>
+	</ui:define>
+
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/cliente/dlgCliente.xhtml" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">REGISTRO DE RESERVAS</h3>
+				</p:panelGrid>
+				<p:messages for="messages" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+					columnClasses="ui-grid-col-12" layout="grid">
+					<p:dataGrid var="reserva" style="box-shadow: 2px 3px 15px gray;"
+						value="#{reservaControlador.listaReservas}" columns="6"
+						layout="grid" rows="24" paginator="true" id="dgreserva"
+						paginatorTemplate="  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="6,12,24">
+
+
+						<f:facet name="header">
+							<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+								columnClasses="ui-grid-col-12" layout="grid"
+								style="margin:-10px">
+								<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid"
+									style="float:right;margin-right:-15px;">
+									<p:inputText id="globalFilter"
+										value="#{reservaControlador.buscarCliente}" onkeyup="true"
+										style="width:178px" placeholder="Buscar cliente">
+										<p:ajax process="@this" update="form"
+											listener="#{reservaControlador.buscarCliente()}" />
+									</p:inputText>
+								</p:panelGrid>
+							</p:panelGrid>
+						</f:facet>
+
+
+						<p:panel style="text-align:center;font-size: 85%"
+							styleClass="#{reserva.reservaHabitaciones.listIterator().next().habitacionEstado eq 'RESERVADA' ? 'reservada':null}">
+
+							<f:facet name="header">
+								<p:outputLabel
+									value="#{reserva.reservaHabitaciones.listIterator().next().habitacionCodigo}" />
+								<p:commandLink oncomplete="PF('dlgReserva').show()"
+									update="form2">
+									<h:outputText styleClass="fa fa-info-circle"
+										style="margin:0 auto;font-size: 10px;float: right" />
+									<f:setPropertyActionListener value="#{reserva}"
+										target="#{reciboControlador.reserva}">
+									</f:setPropertyActionListener>
+								</p:commandLink>
+								<p:commandLink update="form">
+									<h:outputText styleClass="fa fa-close"
+										style="margin:0 auto;font-size: 10px;float: left" />
+									<f:setPropertyActionListener value="#{reserva}"
+										target="#{reservaControlador.actualReserva}"> 
+									</f:setPropertyActionListener>
+									<f:actionListener
+										binding="#{reservaControlador.eliminarReserva()}" />
+
+								</p:commandLink>
+
+							</f:facet>
+							<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+								columnClasses="ui-grid-col-12" layout="grid">
+								<p:outputLabel
+									value="#{reserva.clienteReserva.personaApellidos} #{reserva.clienteReserva.personaNombres} " />
+								<p:outputLabel
+									styleClass="#{reserva.reservaEstado eq 'PENDIENTE' ? 'pendiente':reserva.reservaEstado eq 'CONFIRMADO' ? 'confirmada':null}"
+									value="#{reserva.reservaEstado}" />
+							</p:panelGrid>
+						</p:panel>
+					</p:dataGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+		<p:dialog header="Info. Reserva" widgetVar="dlgReserva" modal="true"
+			showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true" closeOnEscape="true">
+			<h:form id="form2">
+				<div class="ui-fluid">
+					<p:messages for="messager" showDetail="true">
+						<p:autoUpdate />
+					</p:messages>
+					<p:panelGrid id="panel" columns="1" layout="grid"
+						style="box-shadow: 2px 3px 15px gray;width:800px">
+
+						<p:panelGrid columns="4" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-3" layout="grid">
+
+							<h:outputLabel for="fechaR" value="Fecha de reserva">
+								<p:calendar id="fechaR"
+									value="#{reciboControlador.reserva.reservaFecha}"
+									pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+								</p:calendar>
+							</h:outputLabel>
+
+							<h:outputLabel for="fechaEe" value="Fecha de entrada">
+								<p:calendar id="fechaEe"
+									value="#{reciboControlador.reserva.reservaEntrada}"
+									pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+									<p:ajax event="dateSelect"></p:ajax>
+								</p:calendar>
+							</h:outputLabel>
+
+
+							<h:outputLabel for="fechaSs" value="Fecha de salida">
+								<p:calendar id="fechaSs"
+									value="#{reciboControlador.reserva.reservaSalida}"
+									pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+									<p:ajax event="dateSelect" update=":form2:dtListaHabitaciones"
+										listener="#{reciboControlador.editarDias}" />
+								</p:calendar>
+							</h:outputLabel>
+
+							<h:outputLabel for="console" value="Estado">
+								<p:selectOneMenu id="console" style="width:100%"
+									value="#{reciboControlador.reserva.reservaEstado}">
+									<f:selectItem itemLabel="Seleccione" Value="" />
+									<f:selectItems value="#{reservaControlador.estadoReserva}" />
+								</p:selectOneMenu>
+							</h:outputLabel>
+
+						</p:panelGrid>
+
+
+						<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-12" layout="grid">
+
+							<h4 style="margin: 0px">Datos del Cliente / Empresa</h4>
+
+
+							<p:inputText id="cedula" title="Datos del cliente"
+								readonly="true"
+								value="#{reciboControlador.reserva.clienteReserva.personaNombres} #{reciboControladorControlador.reserva.clienteReserva.personaApellidos} / #{reciboControlador.reserva.clienteReserva.personaCedula} / Teléf:#{reciboControlador.reserva.clienteReserva.personaTelefono}" />
+
+						</p:panelGrid>
+						<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-12" layout="grid">
+
+							<p:dataTable id="dtListaHabitaciones" var="habitacion"
+								value="#{reciboControlador.reserva.reservaHabitaciones}"
+								widgetVar="habitacionV" reflow="true" paginator="true" rows="5"
+								paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+
+
+
+
+								<p:column headerText="Habitacion">
+									<h:outputText value="#{habitacion.habitacionCodigo}"
+										style="width:96%" label="habitacion" />
+								</p:column>
+
+								<p:column headerText="Tipo">
+									<h:outputText
+										value="#{habitacion.tipoHabitacion.tipoHabitacionCategoria}"
+										style="width:96%" label="habitacion" />
+								</p:column>
+
+								<p:column headerText="Precio">
+									<h:outputText value="#{habitacion.habitacionPrecioDia}"
+										style="width:96%" />
+								</p:column>
+
+								<p:column headerText="Edificio">
+									<h:outputText value="#{habitacion.habitacionEdificio}"
+										style="width:96%" />
+								</p:column>
+
+								<p:column headerText="Dias">
+									<h:outputText value="#{reciboControlador.reserva.reservaDias}"
+										style="width:96%" />
+								</p:column>
+
+							</p:dataTable>
+
+						</h:panelGrid>
+
+
+						<p:panelGrid columns="3" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-4" layout="grid" style="float:right">
+							<p:commandButton icon="fa fa-close" value="CANCELAR"
+								actionListener="#{reciboControlador.cancelarEdicionReserva()}"
+								update="form panel" onclick="PF('dlgReserva').hide()" />
+							<p:commandButton icon="fa fa-mail-forward" value="CHECK-IN"
+								actionListener="#{reciboControlador.realizarCheckInReserva()}">
+							</p:commandButton>
+							<p:commandButton icon="fa fa-save" value="GUARDAR"
+								actionListener="#{reciboControlador.editarReserva()}"
+								update="form" onclick="PF('dlgReserva').hide()" />
+						</p:panelGrid>
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

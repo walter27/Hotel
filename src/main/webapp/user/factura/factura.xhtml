@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">FACTURA</h3>
+				</p:panelGrid>
+				<p:panelGrid id="pnfactura" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-6" layout="grid">
+						<h:outputLabel value="Numero" for="numero">
+							<p:inputText id="numero"
+								value="#{facturaControlador.facturaCabecera.cabeceraNumero}" />
+						</h:outputLabel>
+						<h:outputLabel for="fecha" value="Fecha"> locale="es"
+							<p:calendar id="fecha" showButtonPanel="true"
+								value="#{facturaControlador.facturaCabecera.cabeceraFecha}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+							</p:calendar>
+						</h:outputLabel>
+
+					</p:panelGrid>
+					<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<h4 style="margin: 0px">Datos del Cliente</h4>
+					</p:panelGrid>
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+
+						<p:inputText id="clienteFactura" title="Datos del cliente"
+							readonly="true"
+							value="#{facturaControlador.facturaCabecera.clienteFactura.personaNombres} #{facturaControlador.facturaCabecera.clienteFactura.personaApellidos} / #{facturaControlador.facturaCabecera.clienteFactura.personaCedula} / teléf:#{facturaControlador.facturaCabecera.clienteFactura.personaTelefono}" />
+						<p:commandButton process="@this"
+							oncomplete="PF('dlgCliente').show()" icon="fa fa-search" />
+					</p:panelGrid>
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<p:dataTable id="dtdetalles" var="detalle"
+							value="#{facturaControlador.listaDetalles}" reflow="true"
+							paginator="true" rows="8"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{detalle.detalleDescripcion}" />
+							</p:column>
+							<p:column headerText="Precio">
+								<h:outputText value="#{detalle.detallePrecio}" />
+							</p:column>
+							<p:column headerText="Cantidad">
+								<h:outputText value="#{detalle.detalleCantidad}" />
+							</p:column>
+							<p:column headerText="Descuento">
+								<h:outputText value="#{detalle.detalleDescuento}" />
+							</p:column>
+							<p:column headerText="Adicional">
+								<h:outputText value="#{detalle.detalleAdicional}" />
+							</p:column>
+							<p:column headerText="Total">
+								<h:outputText value="#{detalle.detalleTotal}" />
+							</p:column>
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="5" footerText="Total"
+										style="text-align:right" />
+									<p:column style="text-align:left"
+										footerText="#{facturaControlador.facturaCabecera.cabeceraTotal}" />
+								</p:row>
+							</p:columnGroup>
+						</p:dataTable>
+					</h:panelGrid>
+					<p:panelGrid columns="3" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-4" layout="grid" style="float:right">
+						<p:commandButton icon="fa fa-close" value="CANCELAR"
+							actionListener="#{facturaControlador.cancelarFactura()}"
+							action="#{reciboControlador.pasarCheckOut()}" />
+						<p:commandButton icon="fa fa-save" value="GUARDAR"
+							actionListener="#{facturaControlador.addFactura()}" update="form"
+							action="#{reciboControlador.pasarCheckOut()}" />
+						<p:commandButton value="IMPRIMIR" ajax="false"
+							icon="fa fa-fw fa-download"
+							actionListener="#{facturaControlador.imprimirFactura}" />
+					</p:panelGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/dialogos/dlgCliente.xhtml" />
+		</h:form>
+	</ui:define>
+</ui:composition>

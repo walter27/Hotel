@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="dlgHospedajes" widgetVar="dlgHospedaje"
+		header="Hospedajes" modal="true" resizable="false"
+		closeOnEscape="true" responsive="true">
+		<h:form>
+			<p:dataTable id="dtHospedaje" var="hospedaje" widgetVar="hospedajes"
+				value="#{reciboControlador.listaRecibos}"
+				filteredValue="#{reciboControlador.filteredRecibos}"
+				style="box-shadow: 2px 3px 15px gray;width:800px" reflow="true"
+				paginator="true" rows="5"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+				<f:facet name="header">
+					<p:outputPanel>
+						<h:outputText value="Buscar hospedaje:" />
+						<p:inputText id="globalFilter" onkeyup="PF('hospedajes').filter()"
+							style="width:200px" placeholder="Buscar" />
+					</p:outputPanel>
+				</f:facet>
+				<p:column headerText="Cliente"
+					filterBy="#{hospedaje.clienteRecibo.personaApellidos} #{hospedaje.clienteRecibo.personaNombres}"
+					filterStyle="display:none">
+					<h:outputText
+						value="#{hospedaje.clienteRecibo.personaApellidos} #{hospedaje.clienteRecibo.personaNombres}" />
+				</p:column>
+				<p:column headerText="DNI"
+					filterBy="#{hospedaje.clienteRecibo.personaCedula}"
+					filterStyle="display:none">
+					<h:outputText value="#{hospedaje.clienteRecibo.personaCedula}" />
+				</p:column>
+				<p:column headerText="Habitacion"
+					filterBy="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.tipoHabitacion.tipoHabitacionCategoria}"
+					filterStyle="display:none">
+					<h:outputText
+						value="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.tipoHabitacion.tipoHabitacionCategoria}" />
+				</p:column>
+				<p:column headerText="Numero"
+					filterBy="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.habitacionCodigo}"
+					filterStyle="display:none">
+					<h:outputText
+						value="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.habitacionCodigo}" />
+				</p:column>
+				<p:column headerText="Edificio"
+					filterBy="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.habitacionEdificio}"
+					filterStyle="display:none">
+					<h:outputText
+						value="#{hospedaje.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.habitacionEdificio}" />
+				</p:column>
+				<p:column style="width:100px;text-align: center">
+					<p:commandButton id="focus" icon="ui-icon-check"
+						update=":form:panelS" title="Asignar cliente"
+						onclick="PF('dlgHospedaje').hide();">
+						<f:setPropertyActionListener value="#{hospedaje}"
+							target="#{reciboControlador.actualReciboCabecera}" for="focus" />
+						<f:actionListener binding="#{reciboControlador.nuevoRecibo()}" />
+						<f:actionListener
+							binding="#{reciboControlador.agregarHospedaje()}" />
+					</p:commandButton>
+					<p:tooltip id="toolTipFocus" for="focus" position="top" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+</ui:composition>

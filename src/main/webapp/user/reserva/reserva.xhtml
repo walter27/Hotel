@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">RESERVA</h3>
+				</p:panelGrid>
+				<p:messages for="msg" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				<p:panelGrid id="panel" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+
+					<p:panelGrid columns="4" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-3" layout="grid">
+
+						<h:outputLabel for="fechaR" value="Fecha de reserva">
+							<p:calendar id="fechaR" showButtonPanel="true" locale="es"
+								value="#{reservaControlador.actualReserva.reservaFecha}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+							</p:calendar>
+						</h:outputLabel>
+
+						<h:outputLabel for="fechaEe" value="Fecha de entrada">
+							<p:calendar id="fechaEe" showButtonPanel="true" locale="es"
+								value="#{reservaControlador.actualReserva.reservaEntrada}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+								<p:ajax event="dateSelect" update="form" />
+							</p:calendar>
+							<p:message for="fechaEe" display="text" />
+						</h:outputLabel>
+
+
+						<h:outputLabel for="fechaSs" value="Fecha de salida">
+							<p:calendar id="fechaSs" showButtonPanel="true" locale="es"
+								value="#{reservaControlador.actualReserva.reservaSalida}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+								<p:ajax event="dateSelect" update="form"
+									listener="#{reservaControlador.asignarDias}" />
+							</p:calendar>
+							<p:message for="fechaSs" display="text" />
+						</h:outputLabel>
+
+						<h:outputLabel for="console" value="Estado">
+							<p:selectOneMenu id="console"
+								value="#{reservaControlador.actualReserva.reservaEstado}"
+								style="width:100%">
+								<f:selectItem itemLabel="Seleccione" Value="" />
+								<f:selectItems value="#{reservaControlador.estadoReserva}" />
+							</p:selectOneMenu>
+						</h:outputLabel>
+
+					</p:panelGrid>
+
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+
+						<h4 style="margin: 0px">Datos del Cliente / Empresa</h4>
+
+
+
+					</p:panelGrid>
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+
+						<p:inputText id="cedula" title="Datos del cliente" readonly="true"
+							value="#{reservaControlador.actualReserva.clienteReserva.personaNombres} #{reservaControlador.actualReserva.clienteReserva.personaApellidos} / #{reservaControlador.actualReserva.clienteReserva.personaCedula} / Teléf:#{reservaControlador.actualReserva.clienteReserva.personaTelefono}" />
+						<p:commandButton process="@this"
+							oncomplete="PF('dlgCliente').show()" icon="fa fa-search"
+							action="#{asignarCliente.loadClientes()}" />
+					</p:panelGrid>
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+
+						<p:dataTable id="dtListaHabitaciones" var="habitacion"
+							value="#{reservaControlador.habitacionesSeleccionadas}"
+							widgetVar="habitacionV" reflow="true" paginator="true" rows="7"
+							selection="#{reservaControlador.habitacionSeleccionada}"
+							selectionMode="single" rowKey="#{habitacion.habitacionId}"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+							<f:facet name="header">
+								<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+									<h4 style="margin: 0px; float: left">Habitaciones</h4>
+									<p:commandButton value="+" icon="fa fa-bed"
+										style="margin-right: -20px"
+										actionListener="#{asignarHabitacion.cargarHabitaciones()}" />
+								</p:panelGrid>
+							</f:facet>
+
+							<p:ajax event="rowSelect"
+								listener="#{reservaControlador.onRowSelect}" />
+
+
+
+
+							<p:column headerText="Habitacion">
+								<h:outputText value="#{habitacion.habitacionCodigo}"
+									style="width:96%" label="habitacion" />
+							</p:column>
+
+							<p:column headerText="Tipo">
+								<h:outputText
+									value="#{habitacion.tipoHabitacion.tipoHabitacionCategoria}"
+									style="width:96%" label="habitacion" />
+							</p:column>
+
+							<p:column headerText="Precio">
+								<h:outputText value="#{habitacion.habitacionPrecioDia}"
+									style="width:96%" />
+							</p:column>
+
+							<p:column headerText="Edificio">
+								<h:outputText value="#{habitacion.habitacionEdificio}"
+									style="width:96%" />
+							</p:column>
+
+							<p:column headerText="Dias">
+								<h:outputText
+									value="#{reservaControlador.actualReserva.reservaDias}"
+									style="width:96%" />
+							</p:column>
+
+						</p:dataTable>
+					</h:panelGrid>
+					<p:contextMenu for="dtListaHabitaciones">
+						<p:menuitem value="Delete" update="dtListaHabitaciones"
+							icon="ui-icon-close"
+							actionListener="#{reservaControlador.removerHabitacion()}">
+						</p:menuitem>
+					</p:contextMenu>
+
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-8" layout="grid" style="float:right">
+						<p:commandButton icon="fa fa-close" value="CANCELAR"
+							actionListener="#{reservaControlador.cancelarReserva()}"
+							update="form panel"
+							action="#{asignarHabitacion.cargarHabitaciones()}"></p:commandButton>
+						<p:commandButton icon="fa fa-save" value="GUARDAR"
+							actionListener="#{reservaControlador.addReserva()}" update="form">
+
+						</p:commandButton>
+					</p:panelGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/dialogos/dlgCliente.xhtml" />
+		</h:form>
+	</ui:define>
+</ui:composition>

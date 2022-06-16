@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<div class="ui-fluid">
+			<h:form id="form">
+				<p:growl for="messages" id="growl" showDetail="true" sticky="true">
+					<p:autoUpdate />
+				</p:growl>
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">RESGITRO / LISTA DE
+						EMPLEADOS</h3>
+				</p:panelGrid>
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:commandButton value="Nuevo Empleado" icon="fa fa-user-plus"
+						type="button" onclick="PF('empleado').show();"
+						style="box-shadow: 2px 3px 15px gray;" />
+				</p:panelGrid>
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+
+					<p:dataTable id="dtempleado" var="empleado" widgetVar="empleados"
+						value="#{empleadoControlador.listaEmpleados}"
+						filteredValue="#{empleadoControlador.filteredEmpleado}"
+						style="box-shadow: 2px 3px 15px gray;" reflow="true"
+						paginator="true" rows="5"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+						<f:facet name="header">
+							<p:outputPanel>
+								<p:inputText id="globalFilter"
+									onkeyup="PF('empleados').filter()" style="width:200px"
+									placeholder="Buscar empleado" />
+							</p:outputPanel>
+						</f:facet>
+
+						<p:column headerText="Cedula/RUC"
+							filterBy="#{empleado.personaCedula}" filterStyle="display:none">
+							<h:outputText value="#{empleado.personaCedula}" />
+						</p:column>
+
+						<p:column headerText="Empleado"
+							filterBy="#{empleado.personaNombres} #{empleado.personaApellidos}"
+							sortBy="empleado.personapellidos" filterStyle="display:none">
+							<h:outputText
+								value="#{empleado.personaNombres} #{empleado.personaApellidos}" />
+						</p:column>
+
+
+						<p:column headerText="Direccion"
+							filterBy="#{empleado.personaDireccion}"
+							filterStyle="display:none">
+							<h:outputText value="#{empleado.personaDireccion}" />
+						</p:column>
+
+						<p:column headerText="Telefono"
+							filterBy="#{empleado.personaTelefono}" filterStyle="display:none">
+							<h:outputText value="#{empleado.personaTelefono}" />
+						</p:column>
+						<p:column headerText="Correo Electronico"
+							filterBy="#{empleado.personaCorreo}" filterStyle="display:none">
+							<h:outputText value="#{empleado.personaCorreo}" />
+						</p:column>
+
+						<p:column headerText="Cargo" filterBy="#{empledo.empleadoCargo}"
+							filterStyle="display:none">
+							<h:outputText value="#{empleado.empleadoCargo}" />
+
+						</p:column>
+
+						<p:column style="width:80px;text-align: center">
+
+							<p:commandButton update="form3:panel2 " id="editar"
+								oncomplete="PF('editarempleado').show()" title="Editar Empleado"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener value="#{empleado}"
+									target="#{empleadoControlador.editarEmpleado}" />
+							</p:commandButton>
+							<p:tooltip id="toolTipFocus" for="editar" position="top" />
+
+						</p:column>
+						<p:column style="width:80px;text-align: center">
+							<p:commandButton icon="ui-icon-trash" id="eliminar"
+								actionListener="#{empleadoControlador.eliminarEmpleado(empleado)}"
+								onclick="return confirm('Seguro que deseea eliminar ')"
+								update="form dtempleado" title="Eliminar empleado"></p:commandButton>
+							<p:tooltip id="toolTipFocus2" for="eliminar" position="top" />
+
+
+						</p:column>
+
+					</p:dataTable>
+				</h:panelGrid>
+			</h:form>
+
+			<p:dialog id="dilaogo" widgetVar="empleado" header="Nuevo Empleado"
+				modal="true" resizable="false" closeOnEscape="true"
+				responsive="true">
+				<h:form id="form2">
+					<h:panelGrid id="panel" columns="2" columnClasses="ui-grid-col-6"
+						layout="grid" styleClass="ui-panelgrid-blank">
+						<p:outputLabel value="Cedula/RUC:"></p:outputLabel>
+						<p:inputMask maxlength="20"
+							value="#{empleadoControlador.actualEmpleado.personaCedula}" />
+
+						<p:outputLabel value="Nombres:"></p:outputLabel>
+						<p:inputText id="nombre"
+							value="#{empleadoControlador.actualEmpleado.personaNombres}">
+							<p:message for="nombre" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Apellidos:"></p:outputLabel>
+						<p:inputText id="apellido"
+							value="#{empleadoControlador.actualEmpleado.personaApellidos}">
+							<p:message for="apellido" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Direccion:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.actualEmpleado.personaDireccion}"></p:inputText>
+
+						<p:outputLabel value="Telefono:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.actualEmpleado.personaTelefono}"></p:inputText>
+
+
+						<p:outputLabel value="Correo:"></p:outputLabel>
+						<p:inputText id="correo"
+							value="#{empleadoControlador.actualEmpleado.personaCorreo}">
+							<p:message for="correo" display="text" />
+						</p:inputText>
+
+						<p:outputLabel value="Cargo:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.actualEmpleado.empleadoCargo}"></p:inputText>
+					</h:panelGrid>
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Registrar" icon="fa fa-save"
+							actionListener="#{empleadoControlador.addEmpleado()}"
+							update="form2 form:dtempleado ">
+						</p:commandButton>
+					</h:panelGrid>
+
+				</h:form>
+			</p:dialog>
+			<p:dialog id="dilaogo2" widgetVar="editarempleado"
+				header="Editar Empleado" modal="true" resizable="false"
+				closeOnEscape="true" responsive="true">
+				<h:form id="form3">
+					<h:panelGrid id="panel2" columns="2" columnClasses="ui-grid-col-6"
+						layout="grid" styleClass="ui-panelgrid-blank">
+						<p:outputLabel value="Cedula/RUC:"></p:outputLabel>
+						<p:inputMask maxlength="20"
+							value="#{empleadoControlador.editarEmpleado.personaCedula}" />
+
+
+
+						<p:outputLabel value="Nombres:"></p:outputLabel>
+						<p:inputText id="nombre"
+							value="#{empleadoControlador.editarEmpleado.personaNombres}">
+							<p:message for="nombre" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Apellidos:"></p:outputLabel>
+						<p:inputText id="apellido"
+							value="#{empleadoControlador.editarEmpleado.personaApellidos}">
+							<p:message for="apellido" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Direccion:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.editarEmpleado.personaDireccion}"></p:inputText>
+
+						<p:outputLabel value="Telefono:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.editarEmpleado.personaTelefono}"></p:inputText>
+
+
+						<p:outputLabel value="Correo:"></p:outputLabel>
+						<p:inputText id="correo"
+							value="#{empleadoControlador.editarEmpleado.personaCorreo}">
+							<p:message for="correo" display="text" />
+						</p:inputText>
+
+						<p:outputLabel value="Cargo:"></p:outputLabel>
+						<p:inputText
+							value="#{empleadoControlador.editarEmpleado.empleadoCargo}"></p:inputText>
+					</h:panelGrid>
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Editar" icon="ui-icon-pencil"
+							actionListener="#{empleadoControlador.editarEmpleado()}"
+							update="form:dtempleado ">
+						</p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+		</div>
+	</ui:define>
+</ui:composition>
+

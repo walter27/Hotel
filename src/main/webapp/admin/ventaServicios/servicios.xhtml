@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">REGISTRAR SERVICIOS</h3>
+				</p:panelGrid>
+				<p:panelGrid id="panelS" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+					<p:messages id="mesage" for="message" showDetail="true">
+						<p:autoUpdate />
+					</p:messages>
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-8" layout="grid" style="float: right">
+						<p:outputLabel for="chbxServicio" value="Hospedaje" />
+						<p:selectBooleanCheckbox id="chbxServicio"
+							value="#{reciboControlador.reciboHospedaje.hospedajeAgregarConsumos}">
+							<p:ajax process="@this" update="form" />
+						</p:selectBooleanCheckbox>
+					</p:panelGrid>
+					<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<h4 style="margin: 0px">Datos del Cliente / Empresa</h4>
+					</p:panelGrid>
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+
+						<p:inputText id="clienteConsumo" title="Datos del cliente"
+							readonly="true"
+							value="#{reciboControlador.consumo.consumoCliente.personaNombres} #{reciboControlador.consumo.consumoCliente.personaApellidos} / #{reciboControlador.consumo.consumoCliente.personaCedula} / Teléf:#{reciboControlador.consumo.consumoCliente.personaTelefono}" />
+
+						<p:commandButton process="@this"
+							actionListener="#{reciboControlador.mostrarDialogos()}"
+							icon="fa fa-search" oncomplete="update()" />
+					</p:panelGrid>
+
+					<p:panelGrid columns="4" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4,ui-grid-col-1"
+						layout="grid">
+
+						<h:outputLabel for="fechaC" value="Fecha">
+							<p:calendar id="fechaC" showButtonPanel="true" locale="es"
+								value="#{reciboControlador.consumo.consumoFecha}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+							</p:calendar>
+						</h:outputLabel>
+
+						<p:outputLabel for="servicio" value="Servicio">
+							<p:selectOneMenu id="servicio"
+								value="#{reciboControlador.servicioSeleccionado}"
+								converter="servicioConverter">
+								<f:selectItems value="#{servicioControlador.listaServicios}"
+									var="servicio" itemLabel="#{servicio.servicioNombre}"
+									itemValue="#{servicio}">
+								</f:selectItems>
+								<p:ajax process="@this"
+									listener="#{reciboControlador.ListarProductos()}"
+									update="producto">
+								</p:ajax>
+							</p:selectOneMenu>
+						</p:outputLabel>
+
+						<p:outputLabel for="producto" value="Producto">
+							<p:selectOneMenu id="producto"
+								value="#{reciboControlador.productoServicio}"
+								converter="productoConverter">
+								<f:selectItems value="#{reciboControlador.listaProductos}"
+									var="producto" itemLabel="#{producto.productoNombre}"
+									itemValue="#{producto}" />
+							</p:selectOneMenu>
+						</p:outputLabel>
+
+
+						<h:outputLabel>
+							<br />
+							<p:commandButton icon="fa fa-save" style="width:62px"
+								actionListener="#{reciboControlador.agregarConsumo()}"
+								update="dtListaConsumos producto" />
+						</h:outputLabel>
+					</p:panelGrid>
+					<p:remoteCommand name="update" update="form:dtListaConsumos" />
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<p:dataTable id="dtListaConsumos" var="requerimiento"
+							editable="true" value="#{reciboControlador.listaRequerimiento}"
+							editMode="cell" widgetVar="consumoV" reflow="true"
+							paginator="true" rows="7"
+							selection="#{reciboControlador.requerimientoSeleccionado}"
+							selectionMode="single"
+							rowKey="#{requerimiento.requerimientoId}_#{requerimiento.requerimientoProducto.productoId}_#{requerimiento.requerimientoProducto.productoServicio.servicioId}"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+							<p:ajax event="rowSelect"
+								listener="#{reciboControlador.onRowSelectServicio}" />
+
+
+							<p:ajax event="cellEdit"
+								listener="#{reciboControlador.onCellEditServicio}"
+								oncomplete="update()" />
+
+
+							<p:column headerText="Servicio" style="width:110px">
+								<h:outputText
+									value="#{requerimiento.requerimientoProducto.productoServicio.servicioNombre}" />
+							</p:column>
+
+
+							<p:column headerText="Producto" style="width:120px">
+								<h:outputText id="producto"
+									value="#{requerimiento.requerimientoProducto.productoNombre}" />
+							</p:column>
+
+							<p:column headerText="Precio" style="width:75px">
+								<h:outputText id="precio"
+									value="#{requerimiento.requerimientoProducto.productoPrecio}" />
+							</p:column>
+
+							<p:column headerText="Descripcion">
+								<h:outputText id="descripcion"
+									value="#{requerimiento.requerimientoProducto.productoDescripcion}" />
+							</p:column>
+
+							<p:column headerText="Cantidad" style="width:80px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{requerimiento.requerimientoCantidad}">
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{requerimiento.requerimientoCantidad}"
+											style="width:96%" label="Cantidad">
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="Fecha">
+								<h:outputText id="fecha"
+									value="#{reciboControlador.consumo.consumoFecha}" />
+							</p:column>
+
+							<p:column headerText="Total" style="width:100px">
+								<h:outputText id="total"
+									value=" #{requerimiento.requerimientoTotal}">
+								</h:outputText>
+							</p:column>
+							<p:columnGroup type="footer">
+								<p:row
+									rendered="#{reciboControlador.reciboHospedaje.hospedajeAgregarConsumos eq 'true'}">
+									<p:column colspan="6" footerText="Total"
+										style="text-align:right" />
+									<p:column style="text-align:left"
+										footerText="#{reciboControlador.reciboHospedaje.consumo.total}" />
+								</p:row>
+								<p:row
+									rendered="#{reciboControlador.reciboHospedaje.hospedajeAgregarConsumos eq 'false'}">
+
+									<p:column colspan="6" footerText="Total"
+										style="text-align:right" />
+									<p:column style="text-align:left"
+										footerText="#{reciboControlador.consumo.total}" />
+								</p:row>
+
+							</p:columnGroup>
+						</p:dataTable>
+					</h:panelGrid>
+					<p:contextMenu for="dtListaConsumos">
+						<p:menuitem value="Delete" update="dtListaConsumos"
+							icon="ui-icon-close"
+							actionListener="#{reciboControlador.removerConsumo()}">
+						</p:menuitem>
+					</p:contextMenu>
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-8" layout="grid" style="float:right;">
+						<p:commandButton icon="fa fa-close" value="CANCELAR" update="form"
+							actionListener="#{reciboControlador.inicializar()}" />
+						<p:commandButton icon="fa fa-save" value="GUARDAR" update="form"
+							actionListener="#{reciboControlador.addCosumos()}" />
+					</p:panelGrid>
+
+				</p:panelGrid>
+			</div>
+		</h:form>
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/dialogos/dlgCliente.xhtml" />
+		</h:form>
+		<h:form id="formServicios">
+			<ui:include src="/dialogos/dlgHospedajes.xhtml" />
+		</h:form>
+
+
+	</ui:define>
+</ui:composition>

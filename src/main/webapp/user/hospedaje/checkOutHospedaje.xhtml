@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	xmlns:c="http://java.sun.com/jstl/core"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="ui-fluid">
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">LISTA DE REGISTROS /
+						CHECK OUT</h3>
+				</p:panelGrid>
+				<p:messages for="messages" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+					columnClasses="ui-grid-col-12" layout="grid">
+					<p:dataGrid var="recibo" style="box-shadow: 2px 3px 15px gray;"
+						value="#{reciboControlador.listaRecibos}" columns="6"
+						layout="grid" rows="24" paginator="true" id="recibos"
+						paginatorTemplate="  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="6,12,24">
+
+						<f:facet name="header">
+							<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+								columnClasses="ui-grid-col-12" layout="grid"
+								style="margin:-10px">
+								<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid"
+									style="float:right;margin-right:-15px;">
+									<p:inputText id="globalFilter"
+										value="#{reciboControlador.buscarCliente}" style="width:178px"
+										placeholder="Buscar">
+										<p:ajax event="keyup" update="form:recibos"
+											listener="#{reciboControlador.buscarCliente()}" />
+									</p:inputText>
+								</p:panelGrid>
+							</p:panelGrid>
+						</f:facet>
+
+
+						<p:panel style="text-align:center;font-size: 85%"
+							styleClass="ocupada">
+							<f:facet name="header">
+								<p:outputLabel
+									value="#{recibo.listaDetalles.listIterator().next().detalleAlojamiento.alojamientoHabitacion.habitacionCodigo}" />
+								<p:commandLink update=":form2:tab"
+									oncomplete="PF('dlgRecibo').show()">
+									<h:outputText styleClass="fa fa-info-circle"
+										style="margin:0 auto;font-size: 10px;float: right" />
+									<f:setPropertyActionListener value="#{recibo}"
+										target="#{reciboControlador.actualReciboCabecera}">
+									</f:setPropertyActionListener>
+									<f:setPropertyActionListener value="#{recibo}"
+										target="#{facturaControlador.reciboCabecera}">
+									</f:setPropertyActionListener>
+
+									<f:actionListener binding="#{reciboControlador.nuevoRecibo()}"></f:actionListener>
+								</p:commandLink>
+
+								<p:commandLink update="form">
+									<h:outputText styleClass="fa fa-close"
+										style="margin:0 auto;font-size: 10px;float: left" />
+									<f:setPropertyActionListener value="#{recibo}"
+										target="#{reciboControlador.actualReciboCabecera}" />
+									<f:actionListener binding="#{reciboControlador.nuevoRecibo()}" />
+									<f:actionListener
+										binding="#{reciboControlador.eliminarRecibo()}" />
+								</p:commandLink>
+
+							</f:facet>
+							<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+								columnClasses="ui-grid-col-12" layout="grid">
+								<p:outputLabel
+									value="#{recibo.clienteRecibo.personaApellidos} #{recibo.clienteRecibo.personaNombres} " />
+								<p:outputLabel id="cobrar2"
+									value="#{recibo.reciboCabeceraCobrar} $" />
+							</p:panelGrid>
+						</p:panel>
+
+					</p:dataGrid>
+				</p:panelGrid>
+			</div>
+		</h:form>
+
+
+		<p:dialog header="Info. Hospedaje" widgetVar="dlgRecibo" modal="true"
+			showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true" closeOnEscape="true" id="dlgHospedaje">
+			<h:form id="form2">
+
+				<p:messages for="message" showDetail="true">
+					<p:autoUpdate />
+				</p:messages>
+				<div class="ui-fluid">
+					<p:tabView id="tab">
+						<p:tab title="Alojamiento">
+							<p:panelGrid id="panel" columns="1" layout="grid"
+								style="box-shadow: 2px 3px 15px gray;width:850px">
+								<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-6" layout="grid">
+									<h:outputLabel for="fechaEe" value="Fecha de entrada*">
+										<p:calendar id="fechaEe" showButtonPanel="true" locale="es"
+											value="#{reciboControlador.reciboHospedaje.hospedajeEntrada}"
+											pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+											<p:ajax event="dateSelect" update="form2:tab:panel"></p:ajax>
+										</p:calendar>
+									</h:outputLabel>
+
+									<h:outputLabel for="fechaSs" value="Fecha de salida">
+										<p:calendar id="fechaSs" showButtonPanel="true" locale="es"
+											value="#{reciboControlador.reciboHospedaje.hospedajeSalida}"
+											pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+											<p:ajax event="dateSelect" update="form2:tab:panel"
+												listener="#{reciboControlador.calcularDias}" />
+										</p:calendar>
+									</h:outputLabel>
+
+								</p:panelGrid>
+								<h4 style="margin: 0px">Datos del Cliente / Empresa</h4>
+								<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid">
+
+									<p:inputText id="cedula" title="Datos del cliente"
+										readonly="true"
+										value="#{reciboControlador.reciboHospedaje.cliente.personaNombres} #{reciboControlador.reciboHospedaje.cliente.personaApellidos} / #{reciboControlador.reciboHospedaje.cliente.personaCedula} / Teléf:#{reciboControlador.reciboHospedaje.cliente.personaTelefono}" />
+
+								</p:panelGrid>
+
+								<p:remoteCommand name="update" update="form form2:tab:panel" />
+
+								<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid">
+									<p:dataTable id="dtListaDetalle" var="detalle"
+										value="#{reciboControlador.listaDetalles}" editable="true"
+										editMode="cell" widgetVar="detalleA" reflow="true"
+										paginator="true" rows="5"
+										selection="#{reciboControlador.detalleSeleccionado}"
+										selectionMode="single"
+										rowKey="#{detalle.detalleAlojamiento.alojamientoId}_{#{detalle.detalleAlojamiento.alojamientoHabitacion.habitacionId}_{#{detalle.detalleAlojamiento.alojamientoCliente.personaId}_{#{detalle.reciboCabecera.reciboCabeceraId}_{#{detalle.detalleAlojamiento.alojamientoHospedaje.hospedajeId}"
+										paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+										<f:facet name="header">
+											<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+												columnClasses="ui-grid-col-11,ui-grid-col-1" layout="grid">
+												<h4 style="margin: 0px; float: left">Alojamiento(s)</h4>
+												<p:commandButton icon="fa fa-dollar" id="nuevoM"
+													style="margin-right: -22px"
+													oncomplete="PF('dlgMonto').show()" title="Nuevo Monto"
+													update="form6:panelM" />
+												<p:tooltip for="nuevoM" position="top"></p:tooltip>
+											</p:panelGrid>
+										</f:facet>
+
+										<p:ajax event="rowSelect"
+											listener="#{reciboControlador.onRowSelect}" />
+
+										<p:ajax event="cellEdit"
+											listener="#{reciboControlador.onCellEdit}"
+											oncomplete="update()" />
+
+										<p:column headerText="Huesped">
+											<h:outputText id="huesped"
+												value="#{detalle.detalleAlojamiento.alojamientoCliente.personaNombres}"
+												style="width:135px" />
+										</p:column>
+
+
+										<p:column headerText="Habitacion">
+											<h:outputText
+												value="#{detalle.detalleAlojamiento.alojamientoHabitacion.habitacionCodigo}-#{detalle.detalleAlojamiento.alojamientoHabitacion.tipoHabitacion.tipoHabitacionCategoria}"
+												style="width:96%" label="habitacion" />
+										</p:column>
+
+										<p:column headerText="Precio">
+											<h:outputText
+												value="#{detalle.detalleAlojamiento.alojamientoHabitacion.habitacionPrecioDia}"
+												style="width:96%" />
+										</p:column>
+
+										<p:column headerText="Cantidad">
+											<h:outputText value="#{detalle.detalleCantidad}"
+												style="width:96%" />
+										</p:column>
+
+										<p:column headerText="Descuento" id="descuento">
+											<p:cellEditor>
+												<f:facet name="output">
+													<h:outputText
+														value="#{detalle.detalleAlojamiento.alojamientoDescuento}">
+													</h:outputText>
+												</f:facet>
+												<f:facet name="input">
+													<p:inputText
+														value="#{detalle.detalleAlojamiento.alojamientoDescuento}"
+														style="width:96%" label="Descuento">
+													</p:inputText>
+												</f:facet>
+											</p:cellEditor>
+										</p:column>
+										<p:column headerText="Adicional" id="adicional">
+											<p:cellEditor>
+												<f:facet name="output">
+													<h:outputText
+														value="#{detalle.detalleAlojamiento.alojamientoAdicional}">
+													</h:outputText>
+												</f:facet>
+												<f:facet name="input">
+													<p:inputText
+														value="#{detalle.detalleAlojamiento.alojamientoAdicional}"
+														style="width:96%" label="Adicional">
+													</p:inputText>
+												</f:facet>
+											</p:cellEditor>
+										</p:column>
+
+										<p:column headerText="Total">
+											<h:outputText id="total" value="#{detalle.detalleTotal}" />
+										</p:column>
+										<p:columnGroup type="footer" id="total2">
+											<p:row>
+												<p:column colspan="6" footerText="Total"
+													style="text-align:right" />
+												<p:column style="text-align:left"
+													footerText="#{reciboControlador.reciboCabecera.reciboCabeceraAlojamientosTotal}" />
+											</p:row>
+										</p:columnGroup>
+									</p:dataTable>
+								</h:panelGrid>
+								<p:contextMenu for="dtListaDetalle">
+									<p:menuitem value="Cambiar habitacion" icon="fa fa-bed"
+										action="#{asignarHabitacion.cargarHabitaciones()}"
+										actionListener="#{reciboControlador.casoHabitacion()}" />
+									<p:menuitem value="Cambiar huesped" icon="fa fa-user"
+										actionListener="#{reciboControlador.casoHuesped()}"
+										oncomplete="PF('dlgCliente').show()">
+									</p:menuitem>
+
+								</p:contextMenu>
+
+
+
+								<p:panelGrid columns="3" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-4" layout="grid" style="float:right">
+									<p:commandButton icon="fa fa-close" value="CANCELAR"
+										update="form"
+										actionListener="#{reciboControlador.cancelarEdicion()}"
+										onclick="PF('dlgRecibo').hide()" />
+									<p:commandButton icon="fa fa-mail-reply" value="CHECKOUT"
+										actionListener="#{reciboControlador.mostraDialogoCkechOut()}"
+										update="form3 form">
+									</p:commandButton>
+									<p:commandButton icon="fa fa-save" value="GUARDAR"
+										actionListener="#{reciboControlador.editarRecibo()}"
+										onclick="PF('dlgRecibo').hide()" update="form">
+									</p:commandButton>
+								</p:panelGrid>
+							</p:panelGrid>
+						</p:tab>
+						<p:tab title="Servicios">
+							<p:panelGrid columns="1" layout="grid" id="panelS"
+								style="box-shadow: 2px 3px 15px gray;width:850px">
+
+								<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid">
+									<p:dataTable id="dtListaConsumos" var="consumo"
+										value="#{reciboControlador.listaRequerimiento}"
+										widgetVar="consumoV" reflow="true" paginator="true" rows="9"
+										paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+
+										<p:column headerText="Servicio" style="width:110px">
+											<h:outputText
+												value="#{consumo.requerimientoProducto.productoServicio.servicioNombre}" />
+										</p:column>
+
+
+										<p:column headerText="Producto" style="width:120px">
+											<h:outputText id="producto"
+												value="#{consumo.requerimientoProducto.productoNombre}" />
+										</p:column>
+
+										<p:column headerText="Precio" style="width:75px">
+											<h:outputText id="precio"
+												value="#{consumo.requerimientoProducto.productoPrecio}" />
+										</p:column>
+
+										<p:column headerText="Descripcion">
+											<h:outputText id="descripcion"
+												value="#{consumo.requerimientoProducto.productoDescripcion}" />
+										</p:column>
+
+										<p:column headerText="Cantidad" style="width:80px">
+											<h:outputText value="#{consumo.requerimientoCantidad}">
+											</h:outputText>
+										</p:column>
+
+										<p:column headerText="Fecha">
+											<h:outputText id="fecha"
+												value="#{reciboControlador.reciboHospedaje.consumo.consumoFecha}" />
+										</p:column>
+
+										<p:column headerText="Total" style="width:50px">
+											<h:outputText id="total"
+												value="#{consumo.requerimientoTotal}" />
+										</p:column>
+										<p:columnGroup type="footer">
+											<p:row>
+												<p:column colspan="6" footerText="Total"
+													style="text-align:right" />
+												<p:column style="text-align:left"
+													footerText="#{reciboControlador.reciboHospedaje.consumo.total}" />
+											</p:row>
+
+										</p:columnGroup>
+									</p:dataTable>
+								</h:panelGrid>
+							</p:panelGrid>
+
+						</p:tab>
+					</p:tabView>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Info. Montos" widgetVar="dlgMonto" modal="true"
+			showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true">
+			<h:form id="form6">
+				<div class="ui-fluid">
+					<p:panelGrid id="panelM" columns="1" layout="grid"
+						style="box-shadow: 2px 3px 15px gray;width:700px">
+						<p:messages for="messagess" showDetail="true">
+							<p:autoUpdate />
+						</p:messages>
+						<p:panelGrid columns="4" layout="grid"
+							columnClasses="ui-grid-col-3" styleClass="ui-panelgrid-blank">
+
+							<h:outputLabel for="fechaM" value="Fecha pago*">
+								<p:calendar id="fechaM" pattern="MM/dd/yyyy HH:mm"
+									timeZone="America/Guayaquil" showButtonPanel="true" locale="es"
+									value="#{reciboControlador.monto.abonoFecha}">
+								</p:calendar>
+							</h:outputLabel>
+
+							<h:outputLabel value="Nuevo monto">
+								<p:inputText id="Nmonto"
+									value="#{reciboControlador.monto.abonoMonto}" />
+							</h:outputLabel>
+
+							<h:outputLabel for="tipoP" value="Tipo de Pago">
+								<p:selectOneMenu id="tipoP"
+									value="#{reciboControlador.monto.abonoTipoPago}"
+									style="width:100%">
+									<f:selectItem itemLabel="Seleccione" Value="" />
+									<f:selectItems value="#{reciboControlador.listaTipoPago}" />
+								</p:selectOneMenu>
+							</h:outputLabel>
+
+							<h:outputLabel>
+								<br />
+								<p:commandButton value="Agregar"
+									actionListener="#{reciboControlador.addNuevoMonto()}"
+									update="form6" />
+							</h:outputLabel>
+
+						</p:panelGrid>
+						<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-12" layout="grid">
+							<p:dataTable id="dtMonto" var="monto"
+								value="#{reciboControlador.listaMontos}" editable="true"
+								editMode="cell" widgetVar="montoV" reflow="true"
+								paginator="true" rows="5"
+								selection="#{reciboControlador.montoSeleccionado}"
+								selectionMode="single" rowKey="#{monto.abonoId}"
+								paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+								<p:ajax event="rowSelect"
+									listener="#{reciboControlador.onRowSelectAbono}" />
+
+								<p:column headerText="Fecha">
+									<h:outputText value="#{monto.abonoFecha}" />
+								</p:column>
+								<p:column headerText="Tipo pago">
+									<h:outputText value="#{monto.abonoTipoPago}" />
+								</p:column>
+								<p:column headerText="Monto">
+									<h:outputText value="#{monto.abonoMonto}" />
+								</p:column>
+								<p:columnGroup type="footer">
+									<p:row>
+										<p:column colspan="2" footerText="Total"
+											style="text-align:right" />
+										<p:column style="text-align:left"
+											footerText="#{reciboControlador.actualReciboCabecera.reciboCabeceraMontoTotal}" />
+									</p:row>
+								</p:columnGroup>
+							</p:dataTable>
+						</h:panelGrid>
+						<p:contextMenu for="dtMonto">
+							<p:menuitem value="Eliminnar" icon="ui-icon-close"
+								actionListener="#{reciboControlador.removerAbono()}"
+								update="dtMonto form form6" />
+						</p:contextMenu>
+						<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+							columnClasses="ui-grid-col-6" layout="grid">
+
+							<p:outputLabel value="Total">
+								<p:inputText id="total"
+									value="#{reciboControlador.actualReciboCabecera.reciboCabeceraTotal}" />
+							</p:outputLabel>
+
+							<p:outputLabel value="Cobrar">
+								<p:inputText id="cobrar"
+									value="#{reciboControlador.actualReciboCabecera.reciboCabeceraCobrar}" />
+							</p:outputLabel>
+
+						</p:panelGrid>
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="Generar factura" widgetVar="cfdialog" modal="true"
+			showEffect="fade" hideEffect="fade" resizable="false"
+			responsive="true" closeOnEscape="true">
+			<h:form id="form3">
+				<div class="ui-fluid">
+					<p:panelGrid columns="3" layout="grid"
+						columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank"
+						style="width:350px">
+
+						<p:commandButton value="yes" icon="fa fa-check"
+							actionListener="#{reciboControlador.generarFactura()}">
+							<p:ajax process="@this"
+								listener="#{facturaControlador.generarFactura()}"></p:ajax>
+						</p:commandButton>
+						<p:commandButton value="No" icon="fa fa-close"
+							actionListener="#{reciboControlador.realizarCheckOut()}"
+							action="#{reciboControlador.pasarCheckOut()}" />
+						<p:commandButton value="CANCELAR"
+							actionListener="#{reciboControlador.cancelarEdicion()}"
+							onclick="PF('cfdialog').hide()" />
+					</p:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+	<ui:define name="externalForm">
+		<h:form id="formHospedaje">
+			<ui:include src="/dialogos/dlgCliente.xhtml" />
+		</h:form>
+
+	</ui:define>
+</ui:composition>
+
+

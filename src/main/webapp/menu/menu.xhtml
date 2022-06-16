@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet">
+	<h:form>
+		<p:panel styleClass="panel"
+			style="	background: url(#{ resource [ 'imagenes:sidebarr.jpg' ]
+}
+
+);">
+			<p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid"
+				styleClass="ui-panelgrid-blank">
+				<p:graphicImage url="/resources/imagenes/usuario7.gif" width="50px" />
+				<p:outputLabel style="margin: 0px; "
+					value="#{reciboControlador.usuario.personaNombres} #{reciboControlador.usuario.personaApellidos}" />
+			</p:panelGrid>
+
+		</p:panel>
+		<p:scrollPanel mode="native" style="height: 76vh;">
+
+			<p:panelMenu style="box-shadow: 2px 3px 15px gray;">
+				<p:submenu label="Mantenimiento" icon=" fa fa fa-folder-open">
+					<p:menuitem value="Clientes"
+						url="../cliente/mantenimientoCliente.xhtml"
+						icon=" fa fa-user-plus" />
+					<p:menuitem value="Empleados"
+						url="../empleado/mantenimientoEmpleado.xhtml"
+						icon=" fa fa-user-plus" />
+					<p:menuitem value="Usuarios"
+						rendered="#{facesContext.externalContext.isUserInRole('admin')}"
+						url="../usuario/usuarioMantenimiento.xhtml"
+						icon=" fa fa-user-plus" />
+					<p:menuitem value="Habitacion"
+						rendered="#{facesContext.externalContext.isUserInRole('admin')}"
+						url="../habitacion/mantenimientoHabitacion.xhtml"
+						icon=" fa fa-bed" />
+					<p:menuitem value="Tipo de Habitacion"
+						rendered="#{facesContext.externalContext.isUserInRole('admin')}"
+						url="../habitacion/mantenimientoTipoHabitacion.xhtml"
+						icon=" fa fa-bed" />
+					<p:menuitem value="Servicios"
+						rendered="#{facesContext.externalContext.isUserInRole('admin')}"
+						action="#{servicioControlador.pasarServicios()}"
+						icon=" fa fa-folder-o" />
+					<p:menuitem value="Productos"
+						action="#{productoControlador.pasarProductos()}"
+						icon=" fa fa-folder-o" />
+				</p:submenu>
+				<p:submenu label="Registro de Ingreso">
+					<p:menuitem value="Planificación" icon="fa fa-mail-forward"
+						actionListener="#{reciboControlador.inicializar()}"
+						action="#{asignarHabitacion.cargarHabitaciones()}">
+						<f:actionListener
+							binding="#{reservaControlador.inicializarReserva()}" />
+						<f:actionListener binding="#{asignarCliente.loadClientes()}" />
+						<f:actionListener binding="#{dlgEmpleado.loadEmpleados()}" />
+					</p:menuitem>
+				</p:submenu>
+				<p:submenu label="Registro de Salida">
+					<p:menuitem value="Salida" icon=" fa fa-mail-reply"
+						actionListener="#{reciboControlador.inicializar()}"
+						action="#{reciboControlador.pasarCheckOut()}">
+						<f:actionListener
+							binding="#{reservaControlador.inicializarReserva()}" />
+					</p:menuitem>
+				</p:submenu>
+				<p:submenu label="Registro de Reservas">
+					<p:menuitem value="Reservas" icon=" fa fa-folder-o"
+						action="#{reservaControlador.pasarReservaciones()}"
+						actionListener="#{reciboControlador.inicializar()}">
+						<f:actionListener
+							binding="#{reservaControlador.inicializarReserva()}" />
+					</p:menuitem>
+				</p:submenu>
+				<p:submenu label="Servicios">
+					<p:menuitem value="Servicios"
+						action="#{reciboControlador.pasarServicios()}"
+						icon=" fa fa-folder-o" />
+					<p:menuitem value="Registro limpieza"
+						action="#{servicioControlador.pasarRegistroGobernanta()}"
+						icon=" fa fa-folder-o"
+						actionListener="#{reciboControlador.inicializar()}">
+						<f:actionListener
+							binding="#{reservaControlador.inicializarReserva()}" />
+					</p:menuitem>
+				</p:submenu>
+
+				<p:submenu label="Reportes">
+					<p:menuitem value="Cierre de Caja" icon=" fa fa-inbox"
+						actionListener="#{ingresoControlador.pasarCierreCaja()}" />
+				</p:submenu>
+			</p:panelMenu>
+
+
+		</p:scrollPanel>
+	</h:form>
+</ui:composition>

@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="form">
+			<div class="ui-fluid">
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12">
+					<h3 style="color: gray; margin: 0px;">REPORTE DIARIO DE
+						INGRESOS</h3>
+				</h:panelGrid>
+
+				<p:panelGrid id="panel" columns="1" layout="grid"
+					style="box-shadow: 2px 3px 15px gray;">
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-6" layout="grid">
+						<h:outputLabel value="Usuario" for="usuario">
+							<p:inputText id="usuario" readonly="true"
+								value="#{ingresoControlador.usuario.personaNombres} #{ingresoControlador.usuario.personaApellidos}" />
+						</h:outputLabel>
+						<h:outputLabel for="fecha" value="Fecha">
+							<p:calendar id="fecha"
+								value="#{ingresoControlador.actualIngreso.ingresosFecha}"
+								pattern="MM/dd/yyyy HH:mm" timeZone="America/Guayaquil">
+							</p:calendar>
+						</h:outputLabel>
+
+					</p:panelGrid>
+
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+
+						<p:dataTable id="dtListaConsumos" var="requerimiento"
+							value="#{ingresoControlador.actualIngreso.listaRequerimiento}"
+							reflow="true" paginator="true" rows="4"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+
+
+							<p:column headerText="Cliente">
+								<h:outputText
+									value="#{requerimiento.consumo.consumoCliente.personaApellidos} #{requerimiento.consumo.consumoCliente.personaNombres}" />
+							</p:column>
+							<p:column headerText="Servicio" style="width:110px">
+								<h:outputText
+									value="#{requerimiento.requerimientoProducto.productoServicio.servicioNombre}" />
+							</p:column>
+
+
+							<p:column headerText="Producto" style="width:120px">
+								<h:outputText id="producto"
+									value="#{requerimiento.requerimientoProducto.productoNombre}" />
+							</p:column>
+
+							<p:column headerText="Precio" style="width:75px">
+								<h:outputText id="precio"
+									value="#{requerimiento.requerimientoProducto.productoPrecio}" />
+							</p:column>
+
+							<p:column headerText="Descripcion" style="width:110px">
+								<h:outputText id="descripcion"
+									value="#{requerimiento.requerimientoProducto.productoDescripcion}" />
+							</p:column>
+
+							<p:column headerText="Cantidad" style="width:60px">
+								<h:outputText value="#{requerimiento.requerimientoCantidad}"
+									style="width:96%" label="Cantidad">
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Fecha" style="width:150px">
+								<h:outputText id="fecha"
+									value="#{requerimiento.consumo.consumoFecha}" />
+							</p:column>
+
+							<p:column headerText="Total" style="width:50px">
+								<h:outputText id="total"
+									value="#{requerimiento.requerimientoTotal}" />
+							</p:column>
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="7" footerText="Total"
+										style="text-align:right" />
+									<p:column style="text-align:left"
+										footerText="#{ingresoControlador.actualIngreso.ingresosTotalConsumos}" />
+								</p:row>
+
+							</p:columnGroup>
+
+						</p:dataTable>
+					</h:panelGrid>
+
+					<h:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-12" layout="grid">
+						<p:dataTable id="dtListaDetalles" var="detalle"
+							value="#{ingresoControlador.actualIngreso.listaDetalles}"
+							reflow="true" paginator="true" rows="4"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} ">
+
+							<f:facet name="header">
+								<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+									columnClasses="ui-grid-col-12" layout="grid"
+									style="margin:-10px">
+									<p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+										columnClasses="ui-grid-col-12" layout="grid"
+										style="float:right;margin-right: -15px">
+
+										<p:commandButton icon="fa fa-dollar"
+											oncomplete="PF('dlgIngreso').show()" actitle="Ingreso" />
+									</p:panelGrid>
+								</p:panelGrid>
+							</f:facet>
+
+
+
+
+							<p:column headerText="Cliente">
+								<h:outputText id="huesped"
+									value="#{detalle.detalleAlojamiento.alojamientoHospedaje.cliente.personaApellidos} #{detalle.detalleAlojamiento.alojamientoHospedaje.cliente.personaNombres}"
+									style="width:135px" />
+							</p:column>
+
+							<p:column headerText="Habitacion">
+								<h:outputText
+									value="#{detalle.detalleAlojamiento.alojamientoHabitacion.habitacionCodigo}-#{detalle.detalleAlojamiento.alojamientoHabitacion.tipoHabitacion.tipoHabitacionCategoria}"
+									style="width:96%" label="habitacion" />
+							</p:column>
+
+							<p:column headerText="Precio">
+								<h:outputText
+									value="#{detalle.detalleAlojamiento.alojamientoHabitacion.habitacionPrecioDia}"
+									style="width:96%" />
+							</p:column>
+
+							<p:column headerText="Dias">
+								<h:outputText value="#{detalle.detalleCantidad}"
+									style="width:96%" />
+							</p:column>
+
+
+							<p:column headerText="Total" style="width:50px">
+								<h:outputText id="total" value="#{detalle.detalleTotal}" />
+							</p:column>
+							<p:columnGroup type="footer" id="total2">
+								<p:row>
+									<p:column colspan="4" footerText="Total"
+										style="text-align:right" />
+									<p:column style="text-align:left"
+										footerText="#{ingresoControlador.actualIngreso.ingresosTotalDetalles}" />
+								</p:row>
+							</p:columnGroup>
+						</p:dataTable>
+					</h:panelGrid>
+
+
+					<p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+						columnClasses="ui-grid-col-6" layout="grid" style="float:right">
+
+						<p:commandButton icon="fa fa-inbox" value="CERRAR "
+							oncomplete="PF('cjdialog').show()" update="form ">
+						</p:commandButton>
+
+						<p:commandButton icon="fa fa-fw fa-download" value="IMPRIMIR"
+							ajax="false"
+							actionListener="#{ingresoControlador.imprimirIngresos}"
+							update="form ">
+						</p:commandButton>
+					</p:panelGrid>
+				</p:panelGrid>
+
+				<p:dialog header="Info. Ingresos" widgetVar="dlgIngreso"
+					modal="true" showEffect="fade" hideEffect="fade" resizable="true"
+					responsive="true" id="dlgIngresi" closeOnEscape="true">
+					<h:form id="form2">
+						<p:panelGrid id="panelI" columns="1" layout="grid"
+							style="box-shadow: 2px 3px 15px gray;width:200px">
+							<p:messages for="messages" showDetail="true" />
+							<p:panelGrid columns="2" layout="grid"
+								columnClasses="ui-grid-col-6" styleClass="ui-panelgrid-blank">
+
+								<h:outputLabel value="Total" />
+								<p:inputText readonly="true"
+									value="#{ingresoControlador.actualIngreso.ingresoTotal}" />
+								<h:outputLabel value="Gastos" />
+								<p:inputText
+									value="#{ingresoControlador.actualIngreso.ingresosGastos}">
+									<p:ajax event="blur"
+										listener="#{ingresoControlador.agregarGastos()}"
+										update="panelI" process="@this" />
+								</p:inputText>
+								<h:outputLabel value="Tarjeta" />
+								<p:inputText
+									value="#{ingresoControlador.actualIngreso.ingresosTarjeta}">
+									<p:ajax event="blur" process="@this"
+										listener="#{ingresoControlador.agregarGastos()}"
+										update="panelI" />
+								</p:inputText>
+								<h:outputLabel value="Ingreso" />
+								<p:inputText readonly="true"
+									value="#{ingresoControlador.actualIngreso.ingresosTotalFinal}" />
+							</p:panelGrid>
+						</p:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog header="Cerrar caja" widgetVar="cjdialog" modal="true"
+					showEffect="fade" hideEffect="fade" resizable="false"
+					responsive="true" closeOnEscape="true">
+					<h:form id="form3">
+						<div class="ui-fluid">
+							<p:panelGrid columns="2" layout="grid"
+								columnClasses="ui-grid-col-6" styleClass="ui-panelgrid-blank"
+								style="width:350px">
+
+								<p:commandButton value="YES" icon="fa fa-check"
+									actionListener="#{ingresoControlador.cerrarCaja()}"
+									update="form" action="#{ingresoControlador.listarReporte()}" />
+								<p:commandButton value="NO" icon="fa fa-close"
+									actionListener="#{ingresoControlador.pasarCierreCaja()}"
+									onclick="PF('cjdialog').hide()"
+									action="#{ingresoControlador.listarReporte()}" update="form" />
+							</p:panelGrid>
+						</div>
+					</h:form>
+				</p:dialog>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<div class="ui-fluid">
+			<h:form id="form">
+				<p:growl id="growl" for="messages" showDetail="true" sticky="true" />
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h4 style="color: gray; margin: 0px;">RESGITRO / LISTA DE
+						HABITACIONES</h4>
+				</p:panelGrid>
+
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:commandButton value="Nueva habitacion" icon="fa fa-bed"
+						type="button" onclick="PF('habitacion').show();"
+						style="box-shadow: 2px 3px 15px gray;" />
+				</p:panelGrid>
+
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:dataTable id="dthabitacion" var="habitacion"
+						widgetVar="habitaciones"
+						value="#{habitacionControlador.listaHabitaciones}"
+						filteredValue="#{habitacionControlador.filteredHabitacion}"
+						style="box-shadow: 2px 3px 15px gray;" reflow="true"
+						paginator="true" rows="7"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+						<f:facet name="header">
+							<p:outputPanel>
+								<p:inputText id="globalFilter"
+									onkeyup="PF('habitaciones').filter()" style="width:200px"
+									placeholder="Buscar habitacion" />
+							</p:outputPanel>
+						</f:facet>
+						<p:column headerText="Nº"
+							filterBy="#{habitacion.habitacionCodigo}"
+							filterStyle="display:none">
+							<h:outputText value="#{habitacion.habitacionCodigo}" />
+						</p:column>
+						<p:column headerText="Edificio"
+							filterBy="#{habitacion.habitacionEdificio}"
+							filterStyle="display:none">
+							<h:outputText value="#{habitacion.habitacionEdificio}" />
+						</p:column>
+						<p:column headerText="Categoria"
+							filterBy="#{habitacion.tipoHabitacion.tipoHabitacionCategoria}"
+							filterStyle="display:none">
+							<h:outputText
+								value="#{habitacion.tipoHabitacion.tipoHabitacionCategoria}" />
+						</p:column>
+						<p:column headerText="Estado"
+							filterBy="#{habitacion.habitacionEstado}"
+							filterStyle="display:none">
+							<h:outputText value="#{habitacion.habitacionEstado}" />
+						</p:column>
+						<p:column headerText="Precio"
+							filterBy="#{habitacion.habitacionPrecioDia}"
+							filterStyle="display:none">
+							<h:outputText value="#{habitacion.habitacionPrecioDia}" />
+						</p:column>
+
+						<p:column headerText="Descripcion"
+							filterBy="#{habitacion.habitacionDescripcion}"
+							filterStyle="display:none">
+							<h:outputText value="#{habitacion.habitacionDescripcion}" />
+						</p:column>
+
+						<p:column style="width:80px;text-align: center">
+
+							<p:commandButton update="form3:panel2 " id="editar"
+								oncomplete="PF('editarhabitacion').show()"
+								title="Editar habitacion" icon="ui-icon-pencil">
+								<f:setPropertyActionListener value="#{habitacion}"
+									target="#{habitacionControlador.editarHabitacion}" />
+							</p:commandButton>
+							<p:tooltip id="toolTipFocus" for="editar" position="top" />
+
+						</p:column>
+						<p:column style="width:80px;text-align: center">
+							<p:commandButton icon="ui-icon-trash" id="eliminar"
+								actionListener="#{habitacionControlador.eliminarHabitacion(habitacion)}"
+								onclick="return confirm('Seguro que desea eliminar ')"
+								update="form dthabitacion" title="Eliminar habitacion"></p:commandButton>
+							<p:tooltip id="toolTipFocus2" for="eliminar" position="top" />
+
+
+						</p:column>
+
+					</p:dataTable>
+				</p:panelGrid>
+			</h:form>
+
+			<p:dialog id="dlghabitacion" widgetVar="habitacion"
+				header="Nueva habitacion" modal="true" resizable="false"
+				closeOnEscape="true" appendTo="@(body)" responsive="true">
+				<h:form id="form2">
+					<p:growl id="growl" showDetail="true" />
+					<h:panelGrid columns="2" columnClasses="ui-grid-col-6"
+						styleClass="ui-panelgrid-blank">
+
+						<p:outputLabel for="tipoHabitacion" value="Tipo" />
+						<p:selectOneMenu id="tipoHabitacion" style="width:100%"
+							value="#{habitacionControlador.actualHabitacion.tipoHabitacion}"
+							converter="tipoHabitacionConverter">
+							<f:selectItems
+								value="#{tipoHabitacionControlador.listaTipoHabitaciones}"
+								var="tipoHabitacion"
+								itemLabel="#{tipoHabitacion.tipoHabitacionCategoria}"
+								itemValue="#{tipoHabitacion}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Nº:"></p:outputLabel>
+						<p:inputText
+							value="#{habitacionControlador.actualHabitacion.habitacionCodigo}"></p:inputText>
+
+						<p:outputLabel for="console" value="Edificio:" />
+						<p:selectOneMenu id="console"
+							value="#{habitacionControlador.actualHabitacion.habitacionEdificio}"
+							style="width:100%">
+							<f:selectItem itemLabel="Seleccione edificio" Value="" />
+							<f:selectItems value="#{habitacionControlador.listaEdificios}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Precio:"></p:outputLabel>
+						<p:inputText
+							value="#{habitacionControlador.actualHabitacion.habitacionPrecioDia}"></p:inputText>
+
+						<p:outputLabel value="Descripcion:"></p:outputLabel>
+						<p:inputTextarea
+							value="#{habitacionControlador.actualHabitacion.habitacionDescripcion}"
+							rows="3" cols="20" />
+
+
+					</h:panelGrid>
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Guardar" icon="ui-icon-check"
+							onclick="PF('habitacion').hide();"
+							actionListener="#{habitacionControlador.addHabitacion()}"
+							update="form form2">
+						</p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+
+			<p:dialog id="dilaogo2" widgetVar="editarhabitacion"
+				header="Editar habitacion" modal="true" resizable="false"
+				closeOnEscape="true" responsive="true">
+				<h:form id="form3">
+					<p:growl id="growl" showDetail="true" />
+					<h:panelGrid id="panel2" columns="2" columnClasses="ui-grid-col-6"
+						layout="grid" styleClass="ui-panelgrid-blank">
+
+						<p:outputLabel for="tipoHabitacion" value="Tipo" />
+						<p:selectOneMenu id="tipoHabitacion" style="width:100%"
+							value="#{habitacionControlador.editarHabitacion.tipoHabitacion}"
+							converter="tipoHabitacionConverter">
+							<f:selectItems
+								value="#{tipoHabitacionControlador.listaTipoHabitaciones}"
+								var="tipoHabitacion"
+								itemLabel="#{tipoHabitacion.tipoHabitacionCategoria}"
+								itemValue="#{tipoHabitacion}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Nº:"></p:outputLabel>
+						<p:inputText
+							value="#{habitacionControlador.editarHabitacion.habitacionCodigo}"></p:inputText>
+
+						<p:outputLabel for="console" value="Edificio:" />
+						<p:selectOneMenu id="console"
+							value="#{habitacionControlador.editarHabitacion.habitacionEdificio}"
+							style="width:100%">
+							<f:selectItem itemLabel="Seleccione edificio" Value="" />
+							<f:selectItems value="#{habitacionControlador.listaEdificios}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Precio:"></p:outputLabel>
+						<p:inputText
+							value="#{habitacionControlador.editarHabitacion.habitacionPrecioDia}"></p:inputText>
+
+						<p:outputLabel value="Descripcion:"></p:outputLabel>
+						<p:inputTextarea
+							value="#{habitacionControlador.editarHabitacion.habitacionDescripcion}"
+							rows="3" cols="20" />
+					</h:panelGrid>
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Editar" icon="ui-icon-pencil"
+							onclick="PF('editarhabitacion').hide();"
+							actionListener="#{habitacionControlador.editarHabitacion()}"
+							update="form form3 ">
+						</p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+		</div>
+	</ui:define>
+</ui:composition>

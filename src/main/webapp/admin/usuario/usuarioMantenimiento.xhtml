@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<div class="ui-fluid">
+			<h:form id="form">
+				<p:growl for="messages" id="growl" showDetail="true" sticky="true">
+					<p:autoUpdate />
+				</p:growl>
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">RESGITRO / LISTA DE
+						USUARIOS</h3>
+				</p:panelGrid>
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:commandButton value="Nuevo Usuario" icon="fa fa-user-plus"
+						type="button" onclick="PF('usuario').show();"
+						style="box-shadow: 2px 3px 15px gray;" />
+				</p:panelGrid>
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank" layout="grid">
+
+					<p:dataTable id="dtusuario" var="usuario" widgetVar="usuarios"
+						value="#{usuarioControlador.listaUsuarios}"
+						filteredValue="#{usuarioControlador.filteredUsuarios}"
+						style="box-shadow: 2px 3px 15px gray;" reflow="true"
+						paginator="true" rows="5"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+						<f:facet name="header">
+							<p:outputPanel>
+								<p:inputText id="globalFilter" onkeyup="PF('usuarios').filter()"
+									style="width:200px" placeholder="Buscar usuario" />
+							</p:outputPanel>
+						</f:facet>
+
+						<p:column headerText="Cedula/RUC"
+							filterBy="#{usuario.personaCedula}" filterStyle="display:none">
+							<h:outputText value="#{usuario.personaCedula}" />
+						</p:column>
+
+						<p:column headerText="Usuario"
+							filterBy="#{usuario.personaNombres} #{usuario.personaApellidos}"
+							sortBy="usuario.personapellidos" filterStyle="display:none">
+							<h:outputText
+								value="#{usuario.personaNombres} #{usuario.personaApellidos}" />
+						</p:column>
+
+
+						<p:column headerText="Direccion"
+							filterBy="#{usuario.personaDireccion}" filterStyle="display:none">
+							<h:outputText value="#{usuario.personaDireccion}" />
+						</p:column>
+
+						<p:column headerText="Telefono"
+							filterBy="#{usuario.personaTelefono}" filterStyle="display:none">
+							<h:outputText value="#{usuario.personaTelefono}" />
+						</p:column>
+						<p:column headerText="Correo Electronico"
+							filterBy="#{usuario.personaCorreo}" filterStyle="display:none">
+							<h:outputText value="#{usuario.personaCorreo}" />
+						</p:column>
+
+						<p:column headerText="Usuario"
+							filterBy="#{usuario.usuarioSistemaUsuario}"
+							filterStyle="display:none">
+							<h:outputText value="#{usuario.usuarioSistemaUsuario}" />
+						</p:column>
+
+						<p:column headerText="Contrasena"
+							filterBy="#{usuario.usuarioSistemaContrasena}"
+							filterStyle="display:none">
+							<h:outputText value="#{usuario.usuarioSistemaContrasena}" />
+						</p:column>
+
+						<p:column headerText="Grupo"
+							filterBy="#{usuario.grupoUsuario.listIterator().next().grupo.grupoNombre}"
+							filterStyle="display:none">
+							<h:outputText
+								value="#{usuario.grupoUsuario.listIterator().next().grupo.grupoNombre}" />
+						</p:column>
+
+						<p:column style="width:80px;text-align: center">
+
+							<p:commandButton update="form3:panel2 " id="editar"
+								oncomplete="PF('editarusuario').show()" title="Editar usuario"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener value="#{usuario}"
+									target="#{usuarioControlador.editarUsuario}" />
+							</p:commandButton>
+							<p:tooltip id="toolTipFocus" for="editar" position="top" />
+
+						</p:column>
+						<p:column style="width:80px;text-align: center">
+							<p:commandButton icon="ui-icon-trash" id="eliminar"
+								actionListener="#{usuarioControlador.eliminarUsuario(usuario)}"
+								onclick="return confirm('Seguro que deseea eliminar ')"
+								update="form dtusuario" title="Eliminar usuario"></p:commandButton>
+							<p:tooltip id="toolTipFocus2" for="eliminar" position="top" />
+
+
+						</p:column>
+
+					</p:dataTable>
+				</h:panelGrid>
+			</h:form>
+
+			<p:dialog id="dilaogo" widgetVar="usuario" header="Nuevo Usuario"
+				modal="true" resizable="false" closeOnEscape="true"
+				responsive="true">
+				<h:form id="form2">
+					<h:panelGrid id="panel" columns="2" columnClasses="ui-grid-col-6"
+						layout="grid" styleClass="ui-panelgrid-blank">
+						<p:outputLabel value="Cedula/RUC:"></p:outputLabel>
+						<p:inputMask maxlength="20"
+							value="#{usuarioControlador.usuario.personaCedula}" />
+
+
+
+						<p:outputLabel value="Nombres:"></p:outputLabel>
+						<p:inputText id="nombre"
+							value="#{usuarioControlador.usuario.personaNombres}">
+							<p:message for="nombre" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Apellidos:"></p:outputLabel>
+						<p:inputText id="apellido"
+							value="#{usuarioControlador.usuario.personaApellidos}">
+							<p:message for="apellido" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Direccion:"></p:outputLabel>
+						<p:inputText
+							value="#{usuarioControlador.usuario.personaDireccion}"></p:inputText>
+
+						<p:outputLabel value="Telefono:"></p:outputLabel>
+						<p:inputText value="#{usuarioControlador.usuario.personaTelefono}"></p:inputText>
+
+
+						<p:outputLabel value="Correo:"></p:outputLabel>
+						<p:inputText id="correo"
+							value="#{usuarioControlador.usuario.personaCorreo}">
+							<p:message for="correo" display="text" />
+						</p:inputText>
+
+						<p:outputLabel value="Usuario:"></p:outputLabel>
+						<p:inputText id="usuario"
+							value="#{usuarioControlador.usuario.usuarioSistemaUsuario}">
+							<p:message for="usuario" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Contraseña:"></p:outputLabel>
+						<p:inputText id="contrasena"
+							value="#{usuarioControlador.usuario.usuarioSistemaContrasena}">
+							<p:message for="contrasena" display="text" />
+						</p:inputText>
+
+						<p:outputLabel for="grupo" value="Grupo" />
+						<p:selectOneMenu id="grupo" style="width:100%"
+							value="#{usuarioControlador.grupo}" converter="grupoConverter">
+							<f:selectItems value="#{usuarioControlador.listaGrupos}"
+								var="grupo" itemLabel="#{grupo.grupoNombre}"
+								itemValue="#{grupo}" />
+							<p:message for="grupo" display="text" />
+						</p:selectOneMenu>
+
+					</h:panelGrid>
+
+
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Registrar" icon="fa fa-save"
+							actionListener="#{usuarioControlador.addUsuario()}"
+							update="form2 form:dtusuario ">
+						</p:commandButton>
+					</h:panelGrid>
+
+				</h:form>
+			</p:dialog>
+			<p:dialog id="dilaogo2" widgetVar="editarusuario"
+				header="Editar Usuario" modal="true" resizable="false"
+				closeOnEscape="true" responsive="true">
+				<h:form id="form3">
+					<h:panelGrid id="panel2" columns="2" columnClasses="ui-grid-col-6"
+						layout="grid" styleClass="ui-panelgrid-blank">
+						<p:outputLabel value="Cedula/RUC:*"></p:outputLabel>
+						<p:inputMask maxlength="20"
+							value="#{usuarioControlador.editarUsuario.personaCedula}" />
+
+
+
+						<p:outputLabel value="Nombres:"></p:outputLabel>
+						<p:inputText id="nombre"
+							value="#{usuarioControlador.editarUsuario.personaNombres}">
+							<p:message for="nombre" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Apellidos:"></p:outputLabel>
+						<p:inputText id="apellido"
+							value="#{usuarioControlador.editarUsuario.personaApellidos}">
+							<p:message for="apellido" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel value="Direccion:"></p:outputLabel>
+						<p:inputText
+							value="#{usuarioControlador.editarUsuario.personaDireccion}"></p:inputText>
+
+						<p:outputLabel value="Telefono:"></p:outputLabel>
+						<p:inputText
+							value="#{usuarioControlador.editarUsuario.personaTelefono}"></p:inputText>
+
+
+						<p:outputLabel value="Correo:"></p:outputLabel>
+						<p:inputText id="correo"
+							value="#{usuarioControlador.editarUsuario.personaCorreo}">
+							<p:message for="correo" display="text" />
+						</p:inputText>
+
+						<p:outputLabel value="Usuario:"></p:outputLabel>
+						<p:inputText id="usuario"
+							value="#{usuarioControlador.editarUsuario.usuarioSistemaUsuario}">
+							<p:message for="usuario" display="text" />
+						</p:inputText>
+
+						<p:outputLabel value="Contraseña:"></p:outputLabel>
+						<p:inputText id="contrasena"
+							value="#{usuarioControlador.editarUsuario.usuarioSistemaContrasena}">
+							<p:message for="contrasena" display="text" />
+						</p:inputText>
+
+
+						<p:outputLabel for="grupo" value="Grupo" />
+						<p:selectOneMenu id="grupo" style="width:100%"
+							value="#{usuarioControlador.editarUsuario.grupoUsuario.listIterator().next().grupo}"
+							converter="grupoConverter">
+							<f:selectItems value="#{usuarioControlador.listaGrupos}"
+								var="grupo" itemLabel="#{grupo.grupoNombre}"
+								itemValue="#{grupo}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+					<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+						layout="grid" styleClass="ui-panelgrid-blank" style="float:right">
+						<p:commandButton value="Editar" icon="ui-icon-pencil"
+							actionListener="#{usuarioControlador.editarUsuario()}"
+							update="form:dtusuario ">
+						</p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+		</div>
+	</ui:define>
+</ui:composition>
+

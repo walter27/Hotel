@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:m="http://java.sun.com/jsf/composite/components/mmnet"
+	template="/WEB-INF/Template/template.xhtml">
+
+	<ui:define name="content">
+		<h:form id="form">
+			<div class="ui-fluid">
+
+				<p:messages for="messages" showDetail="true">
+					<p:autoUpdate></p:autoUpdate>
+				</p:messages>
+				<p:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<h3 style="color: gray; margin: 0px;">RESGITRO / SERVICIOS</h3>
+				</p:panelGrid>
+				<p:panelGrid id="grid" columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:commandButton value="Nuevo servicio" icon="fa fa-bed"
+						type="button" onclick="PF('servicio').show();"
+						style="box-shadow: 2px 3px 15px gray;" />
+				</p:panelGrid>
+				<h:panelGrid columns="1" columnClasses="ui-grid-col-12"
+					styleClass="ui-panelgrid-blank">
+					<p:dataTable id="dtServicio" var="servicio" widgetVar="servicios"
+						value="#{servicioControlador.listaServicios}"
+						filteredValue="#{servicioControlador.filteredServicios}"
+						style="box-shadow: 2px 3px 15px gray;" reflow="true"
+						paginator="true" rows="10"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}">
+
+						<f:facet name="header">
+							<p:outputPanel>
+								<p:inputText id="globalFilter"
+									onkeyup="PF('servicios').filter()" style="width:200px"
+									placeholder="Buscar servicio" />
+							</p:outputPanel>
+						</f:facet>
+
+						<p:column headerText="Servicio"
+							filterBy="#{servicio.servicioNombre}" filterStyle="display:none">
+							<h:outputText value="#{servicio.servicioNombre}" />
+						</p:column>
+
+						<p:column style="width:80px;text-align: center">
+
+							<p:commandButton update="form3:panel2 " id="editar"
+								oncomplete="PF('editarServicio').show()" title="Editar servicio"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener value="#{servicio}"
+									target="#{servicioControlador.editarServicio}" />
+							</p:commandButton>
+							<p:tooltip id="toolTipFocus" for="editar" position="top" />
+
+						</p:column>
+						<p:column style="width:80px;text-align: center">
+							<p:commandButton icon="ui-icon-trash" id="eliminar"
+								actionListener="#{servicioControlador.eliminarServicio(servicio)}"
+								onclick="return confirm('Seguro que desea eliminar ')"
+								update="form dtServicio" title="Eliminar servicio"></p:commandButton>
+							<p:tooltip id="toolTipFocus2" for="eliminar" position="top" />
+
+
+						</p:column>
+
+
+					</p:dataTable>
+				</h:panelGrid>
+			</div>
+		</h:form>
+		<p:dialog id="dlgServicio" widgetVar="servicio"
+			header="Nuevo Servicio" modal="true" resizable="false"
+			closeOnEscape="true" responsive="true">
+			<h:form id="form2">
+				<div class="ui-fluid">
+
+					<h:panelGrid columns="2"
+						columnClasses="ui-grid-col-10 ui-grid-col-2" layout="grid"
+						styleClass="ui-panelgrid-blank">
+						<p:inputText id="serv"
+							value="#{servicioControlador.actualServicio.servicioNombre}">
+							<p:message for="serv" display="text" />
+						</p:inputText>
+
+						<p:commandButton icon="fa fa-save"
+							actionListener="#{servicioControlador.addServicio()}"
+							update="form2 form:dtServicio">
+						</p:commandButton>
+
+					</h:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+		<p:dialog id="dlgEditarServicio" widgetVar="editarServicio"
+			header="Editar Servicio" modal="true" resizable="false"
+			closeOnEscape="true" responsive="true">
+			<h:form id="form3">
+				<div class="ui-fluid">
+
+					<h:panelGrid id="panel2" columns="2"
+						columnClasses="ui-grid-col-10 ui-grid-col-2" layout="grid"
+						styleClass="ui-panelgrid-blank">
+						<p:inputText id="serve"
+							value="#{servicioControlador.editarServicio.servicioNombre}">
+							<p:message for="serve" display="text" />
+						</p:inputText>
+						<p:commandButton icon="ui-icon-check"
+							actionListener="#{servicioControlador.editarServicio()}"
+							update="form:dtServicio">
+						</p:commandButton>
+					</h:panelGrid>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
